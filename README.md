@@ -1,7 +1,7 @@
 # Athan-speaker-using-Raspberry-pi
 Make an Athan alarm speaker that plays the athan audio at you local prayer times.
 
-###Prerequisites: 
+### Prerequisites: 
  -Raspberry pi with imaged SD card and power supply
  -Speaker
 
@@ -34,5 +34,8 @@ nano Athans
 nano FajrAthans
 ```
 Go to the app.py file using the command `nano app.py` and change the path of ATHANS_DIR and FAJR_ATHANS_DIR to where you saved your athans. If you only have 1, still save it in a folder and select it from the Web interface later.
+
+
+
 
 
