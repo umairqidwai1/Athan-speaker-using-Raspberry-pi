@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Athan Control</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .prayer-times,
+        .select-athan,
+        .audio-settings,
+        .system-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .prayer-times h2,
+        .select-athan h2,
+        .audio-settings h2,
+        .system-controls h2 {
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+        }
+
+        .prayer-times ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-group-item {
+            background-color: transparent;
+            border: none;
+            padding: 5px 0;
+            text-align: center;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        label,
+        select,
+        input {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .volume-control input[type="number"] {
+            max-width: 80px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Prayer Times Section -->
+        <div class="prayer-times">
+            <h2>Prayer Times</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Fajr:</strong> {{ prayer_times['fajr_12hr'] }}</li>                         
+                <li class="list-group-item"><strong>Shuruq:</strong> {{ prayer_times['sunset_12hr'] }}</li>                     
+                <li class="list-group-item"><strong>Dhuhr:</strong> {{ prayer_times['dohr_12hr'] }}</li>                        
+                <li class="list-group-item"><strong>Asr:</strong> {{ prayer_times['asr_12hr'] }}</li>
+                <li class="list-group-item"><strong>Maghrib:</strong> {{ prayer_times['maghreb_12hr'] }}</li>
+                <li class="list-group-item"><strong>Isha:</strong> {{ prayer_times['icha_12hr'] }}</li>
+            </ul>
+        </div>
+
+        <!-- Audio Settings Section -->
+        <div class="audio-settings">
+            <h2>Audio Settings</h2>
+            <form method="POST">
+                <div class="volume-control">
+                    <label for="volume_slider" class="form-label">Volume:</label>
+                    <input type="range" name="volume_slider" class="form-range" id="volume_slider" min="1" max=>
+                    <input type="number" name="volume_box" class="form-control" id="volume_box" min="1" max="10>
+                </div>
+                <!-- Volume form is now handled automatically by JavaScript -->
+            </form>
+        </div>
+
+        <!-- Select Athan Audio Section -->
+        <div class="select-athan">
+            <h2>Select Athan Audio</h2>
+            <form method="POST">
+                <label for="fajr_audio" class="form-label">Fajr Athan:</label>
+                <select name="fajr_audio" class="form-select">
+                    {% for file in fajr_athan_files %}
+                    <option value="{{ file }}" {% if selected_fajr_athan == file %}selected{% endif %}>{{ file >                    
+                    {% endfor %}
+                </select>
+
+                <label for="regular_audio" class="form-label">Regular Athan:</label>
+                <select name="regular_audio" class="form-select">
+                    {% for file in regular_athan_files %}
+                    <option value="{{ file }}" {% if selected_regular_athan == file %}selected{% endif %}>{{ fi>                    
+                    {% endfor %}
+                </select>
+
+                <button type="submit" name="save_changes" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- System Controls Section -->
+        <div class="system-controls">
+            <h2>System Controls</h2>
+            <form method="POST" id="system-controls-form">
+                <button type="button" id="test_fajr_btn" class="btn btn-secondary">Test Fajr Athan</button>
+                <button type="button" id="test_regular_btn" class="btn btn-secondary">Test Regular Athan</butto>
+                <button type="button" id="stop_athan_btn" class="btn btn-warning">Stop Athan</button>
+                <button type="submit" name="reboot" class="btn btn-danger">Reboot Raspberry Pi</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        // Sync slider and input box
+        const slider = document.getElementById('volume_slider');
+        const box = document.getElementById('volume_box');
+
+        function updateVolume() {
+            const volume = slider.value;
+            fetch('/update_volume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ volume: volume }),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Volume updated:', data);
+              })
+              .catch(error => {
+                  console.error('Error updating volume:', error);
+              });
+        }
+
+        slider.addEventListener('input', function() {
+            box.value = slider.value;
+            updateVolume(); // Update volume automatically
+        });
+
+        box.addEventListener('input', function() {
+            slider.value = box.value;
+            updateVolume(); // Update volume automatically
+        });
+
+        // Handle button clicks with AJAX
+        document.getElementById('test_fajr_btn').addEventListener('click', function() {
+            fetch('/test_fajr', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Fajr athan test:', data);
+                })
+                .catch(error => {
+                    console.error('Error testing Fajr athan:', error);
+                });
+        });
+
+        document.getElementById('test_regular_btn').addEventListener('click', function() {
+            fetch('/test_regular', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Regular athan test:', data);
+                })
+                .catch(error => {
+                    console.error('Error testing regular athan:', error);
+                });
+        });
+
+        document.getElementById('stop_athan_btn').addEventListener('click', function() {
+            fetch('/stop_athan', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Athan stopped:', data);
+                })
+                .catch(error => {
+                    console.error('Error stopping athan:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>
