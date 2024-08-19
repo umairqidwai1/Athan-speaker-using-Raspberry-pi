@@ -15,8 +15,8 @@ ATHANS_DIR = '/home/umair/Desktop/Athans'
 FAJR_ATHANS_DIR = '/home/umair/Desktop/FajrAthans'
 
 # File to store selected athans
-SELECTION_FILE = 'selected_athans.json'
-VOLUME_FILE = 'volume_setting.json'
+SELECTION_FILE = '/home/umair/selected_athans.json'
+VOLUME_FILE = '/home/umair/volume_setting.json'
 
 # Function to load selected athans from file
 def load_selected_athans():
@@ -44,12 +44,11 @@ def load_volume_setting():
             return json.load(f).get('volume', 50)  # Default to 50 if not found
     else:
         return 50  # Default to 50 if file does not exist
-      
+
 # Function to save volume setting to file
 def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
-
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 current_volume = load_volume_setting()
@@ -61,7 +60,7 @@ def play_fajr_athan():
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
-        while mixer.music.get_busy():  # Wait for the music to finish playing
+        while mixer.music.get_busy():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing Fajr athan: {e}")
@@ -73,7 +72,7 @@ def play_regular_athan():
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
-        while mixer.music.get_busy():  # Wait for the music to finish playing
+        while mixer.music.get_busy():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
@@ -89,7 +88,7 @@ def get_prayer_times():
         response = requests.get("http://localhost:8000/api/v1/noor-dublin/prayer-times")
         if response.status_code == 200:
             prayer_times = response.json()
-            # Convert times to 12-hour format
+
             return {
                 'fajr_12hr': format_time(prayer_times.get('fajr', '')),
                 'sunset_12hr': format_time(prayer_times.get('sunset', '')),
@@ -97,12 +96,17 @@ def get_prayer_times():
                 'asr_12hr': format_time(prayer_times.get('asr', '')),
                 'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
                 'icha_12hr': format_time(prayer_times.get('icha', '')),
+                'fajr': prayer_times.get('fajr', ''),
+                'dohr': prayer_times.get('dohr', ''),
+                'asr': prayer_times.get('asr', ''),
+                'maghreb': prayer_times.get('maghreb', ''),
+                'icha': prayer_times.get('icha', ''),
             }
         else:
             raise Exception(f"Failed to retrieve prayer times. Status code: {response.status_code}")
     except Exception as e:
         print(f"Error retrieving prayer times: {e}")
-        return {}
+
 
 def format_time(time_str):
     """Convert 24-hour time format to 12-hour time format with AM/PM."""
@@ -112,13 +116,6 @@ def format_time(time_str):
     except ValueError:
         return time_str  # Return original if conversion fails
 
-# Schedule daily refresh at 2 AM
-def schedule_daily_refresh():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-schedule.every().day.at("02:00").do(lambda: get_prayer_times())
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -218,10 +215,26 @@ def stop_athan_route():
         print(f"Error stopping athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to stop athan'})
 
+
+def update_prayer_times_daily():
+    while True:
+        current_time = datetime.now().strftime('%H:%M')
+
+        # Check if it's 2:00 AM
+        if current_time == "02:00":
+            prayer_times = get_prayer_times()  # Call the function to get prayer times
+            print(f"Prayer times updated at {current_time}")
+
+            # Sleep until 2:01 AM to ensure the update doesn't happen multiple times within the same minute
+            time.sleep(60)
+
+        time.sleep(600)  # Sleep for 10 minutes before checking again
+
+
 if __name__ == '__main__':
-    # Start the schedule thread
-    schedule_thread = threading.Thread(target=schedule_daily_refresh, daemon=True)
-    schedule_thread.start()
+
+    # Start the daily update in a separate thread
+    threading.Thread(target=update_prayer_times_daily, daemon=True).start()
 
     # Start Flask server
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5027, debug=True)
