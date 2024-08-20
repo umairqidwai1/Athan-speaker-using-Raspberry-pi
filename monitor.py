@@ -5,8 +5,8 @@ import time
 time.sleep(10)
 
 
-app_script_path = "/home/umair/Desktop/app.py"
-loop_script_path = "/home/umair/Desktop/loop.py"
+app_script_path = "/home/pi/Desktop/app.py"
+loop_script_path = "/home/pi/Desktop/loop.py"
 port = 5027
 
 def is_running(script_name):
