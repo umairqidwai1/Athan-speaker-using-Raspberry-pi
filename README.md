@@ -18,11 +18,12 @@ Either SSH into your Raspberry pi using the terminal on you computer using the c
 
 
 ### STEP 1:
-Clone mawaqit-api directory from github.
-Use the command: `git clone https://github.com/mrsofiane/mawaqit-api` to clone it.
-Create virtual environment: `python -m  venv env` or `python3 -m  venv env`
-Activate the virtual environment `source env/bin/activate`
-Install dependencies using pip: `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
+Clone mawaqit-api directory from github:
+- Open Desktop directory: `cd Desktop`
+- Use the command: `git clone https://github.com/mrsofiane/mawaqit-api` to clone it.
+- Create virtual environment: `python -m  venv env` or `python3 -m  venv env`
+- Activate the virtual environment `source env/bin/activate`
+- Install dependencies using pip: `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
 
 Install redis using the commands:
 ```
