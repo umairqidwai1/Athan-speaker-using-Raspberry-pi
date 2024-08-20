@@ -17,6 +17,7 @@ Press CRT+SHIFT+X to open customization menu:
 Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming your username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
 
+
 ### STEP 1:
 Clone mawaqit-api directory from github:
 ```
@@ -24,8 +25,7 @@ cd Desktop
 git clone https://github.com/mrsofiane/mawaqit-api` to clone it.
 cd mawaqit-api
 ```
-
-- Create virtual environment:
+Create virtual environment:
 ```
 python -m  venv env
 ```
@@ -33,13 +33,11 @@ or
 ```
 python3 -m  venv env
 ```
-
-- Activate Virtual enviroment:
+Activate Virtual enviroment:
 ```
 source env/bin/activate
 ```
- 
-- Install dependencies using pip:
+Install dependencies using pip:
 ```
 pip install -r requirements.txt`
 ```
@@ -47,7 +45,6 @@ or
 ```
 pip3 install -r requirements.txt
 ```
-
 Install redis using the commands:
 ```
 sudo apt-get update
@@ -61,22 +58,34 @@ export USE_REDIS=true
 
 
 ### STEP 2:
-Go back to Desktop Directory: `cd /home/pi/Desktop`
+
 Clone this repository. Copy the link from the top and run the command: 
-  `git clone` [link to this repo]
+```
+cd /home/pi/Desktop
+git clone https://github.com/umairqidwai1/Athan-speaker-using-Raspberry-pi.git
+```
+
 
 ### STEP 3:
-Create a folder called Athans and one called FajrAthans and save all your .wav athan audio files there.
-run the commands:
+Make the API and app.py and loop.py files turn on at boot:
 ```
-nano Athans
+cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
+chmod +x startAPI.sh
 ```
+Run the command:
 ```
-nano FajrAthans
+crontab -e
 ```
-Go to the app.py file using the command `nano app.py` and change the path of ATHANS_DIR and FAJR_ATHANS_DIR to where you saved your athans. If you only have 1, still save it in a folder and select it from the Web interface later.
+and type 1
 
-
-
-
+At the top of the file add the line:
+```
+XDG_RUNTIME_DIR=/run/user/1000
+```
+At the bottom of the file add these lines:
+```
+@reboot /home/umair/Desktop/startAPI.sh
+@reboot /usr/bin/python3 /home/umair/Desktop/monitor.py >> /home/umair/Desktop/monitor.log 2>&1
+0 * * * * /usr/bin/python3 /home/umair/Desktop/monitor.py >> /home/umair/Desktop/monitor.log 2>&1
+```
 
