@@ -67,7 +67,7 @@ git clone https://github.com/umairqidwai1/Athan-speaker-using-Raspberry-pi.git
 
 
 ### STEP 3:
-Make the API and app.py and loop.py files turn on at boot:
+Make the startAPI.sh file executable
 ```
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
 chmod +x startAPI.sh
