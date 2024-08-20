@@ -39,6 +39,7 @@ export USE_REDIS=true
 
 
 ### STEP 2:
+Go back to Desktop Directory: `cd /home/pi/Desktop`
 Clone this repository. Copy the link from the top and run the command: 
   `git clone` [link to this repo]
 
