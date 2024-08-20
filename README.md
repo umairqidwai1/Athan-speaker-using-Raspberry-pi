@@ -21,6 +21,7 @@ Either SSH into your Raspberry pi using the terminal on you computer using the c
 Clone mawaqit-api directory from github:
 - Open Desktop directory: `cd Desktop`
 - Use the command: `git clone https://github.com/mrsofiane/mawaqit-api` to clone it.
+- Navigate to directory: `cd mawaqit-api`
 - Create virtual environment: `python -m  venv env` or `python3 -m  venv env`
 - Activate the virtual environment `source env/bin/activate`
 - Install dependencies using pip: `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
