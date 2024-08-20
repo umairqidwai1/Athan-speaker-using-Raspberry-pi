@@ -12,6 +12,9 @@ Press CRT+SHIFT+X to open customization menu:
  - Set hostname and username and password. Make sure your username is pi or else the paths in the code wont work. (pi should be the default username)
  - Configure wireless LAN and enter your wifi name and password. Configure the rest of the settings.
  - In the services tab, enable SSH and click passwork authentication
+ - Save the setting and click next, click yes to apply OS customization settings and **DON'T** format the disk if prompted
+
+Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming you username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
 
 ### STEP 1:
