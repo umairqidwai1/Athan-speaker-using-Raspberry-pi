@@ -14,7 +14,7 @@ Press CRT+SHIFT+X to open customization menu:
  - In the services tab, enable SSH and click passwork authentication
  - Save the setting and click next, click yes to apply OS customization settings and **DON'T** format the disk if prompted
 
-Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming you username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
+Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming your username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
 
 ### STEP 1:
