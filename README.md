@@ -76,7 +76,7 @@ Run the command:
 ```
 crontab -e
 ```
-and type 1
+and select the first editor by typing 1.
 
 At the top of the file add the line:
 ```
