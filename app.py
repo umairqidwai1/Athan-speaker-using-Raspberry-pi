@@ -10,6 +10,9 @@ import threading
 
 app = Flask(__name__)
 
+# Mawaqit API Link for your local mosque
+LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
+
 # Define directories for athan files
 ATHANS_DIR = '/home/umair/Desktop/Athans'
 FAJR_ATHANS_DIR = '/home/umair/Desktop/FajrAthans'
@@ -85,7 +88,7 @@ def set_volume(volume):
 
 def get_prayer_times():
     try:
-        response = requests.get("http://localhost:8000/api/v1/noor-dublin/prayer-times")
+        response = requests.get(LinkAPI)
         if response.status_code == 200:
             prayer_times = response.json()
 
@@ -172,6 +175,34 @@ def index():
                            prayer_times=prayer_times,
                            volume=current_volume)
 
+@app.route('/upload_fajr_athan', methods=['POST'])
+def upload_fajr_athan():
+    if 'file' not in request.files:
+        return redirect(url_for('index'))
+
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(url_for('index'))
+
+    if file:
+        filename = file.filename
+        file.save(os.path.join(FAJR_ATHANS_DIR, filename))
+        return redirect(url_for('index'))
+
+@app.route('/upload_regular_athan', methods=['POST'])
+def upload_regular_athan():
+    if 'file' not in request.files:
+        return redirect(url_for('index'))
+
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(url_for('index'))
+
+    if file:
+        filename = file.filename
+        file.save(os.path.join(ATHANS_DIR, filename))
+        return redirect(url_for('index'))
+
 @app.route('/update_volume', methods=['POST'])
 def update_volume():
     try:
@@ -237,4 +268,4 @@ if __name__ == '__main__':
     threading.Thread(target=update_prayer_times_daily, daemon=True).start()
 
     # Start Flask server
-    app.run(host='0.0.0.0', port=5027, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
