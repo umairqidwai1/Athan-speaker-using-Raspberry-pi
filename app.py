@@ -14,12 +14,12 @@ app = Flask(__name__)
 LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 
 # Define directories for athan files
-ATHANS_DIR = '/home/umair/Desktop/Athans'
-FAJR_ATHANS_DIR = '/home/umair/Desktop/FajrAthans'
+ATHANS_DIR = '/home/pi/Desktop/Athans'
+FAJR_ATHANS_DIR = '/home/pi/Desktop/FajrAthans'
 
 # File to store selected athans
-SELECTION_FILE = '/home/umair/selected_athans.json'
-VOLUME_FILE = '/home/umair/volume_setting.json'
+SELECTION_FILE = '/home/pi/selected_athans.json'
+VOLUME_FILE = '/home/pi/volume_setting.json'
 
 # Function to load selected athans from file
 def load_selected_athans():
