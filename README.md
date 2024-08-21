@@ -35,10 +35,10 @@ python3 -m  venv env
 Activate Virtual enviroment:
 ```
 source env/bin/activate
+cd mawaqit-api
 ```
 Install dependencies using pip:
 ```
-cd mawaqit-api
 pip install -r requirements.txt
 ```
 or 
