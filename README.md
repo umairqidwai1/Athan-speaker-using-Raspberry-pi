@@ -23,7 +23,6 @@ Clone mawaqit-api directory from github:
 ```
 cd Desktop
 git clone https://github.com/mrsofiane/mawaqit-api` to clone it.
-cd mawaqit-api
 ```
 Create virtual environment:
 ```
@@ -39,7 +38,8 @@ source env/bin/activate
 ```
 Install dependencies using pip:
 ```
-pip install -r requirements.txt`
+cd mawaqit-api
+pip install -r requirements.txt
 ```
 or 
 ```
