@@ -5,8 +5,8 @@ import time
 time.sleep(10)
 
 
-app_script_path = "/home/pi/Desktop/app.py"
-loop_script_path = "/home/pi/Desktop/loop.py"
+app_script_path = "/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/app.py"
+loop_script_path = "/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/loop.py"
 port = 5027
 
 def is_running(script_name):
