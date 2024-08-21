@@ -89,3 +89,13 @@ At the bottom of the file add these lines:
 0 * * * * /usr/bin/python3 /home/umair/Desktop/monitor.py >> /home/umair/Desktop/monitor.log 2>&1
 ```
 
+
+### STEP 4:
+Make 2 folder, one for Fajr athan audio files and one for Regular athan audio files:
+```
+mkdir Athans
+mkdir FajrAthans
+```
+Add all you Athan Audio Files to thier corresponding folders.
+
+Make SURE to create these folders since the paths in the code point to them. Even if you only have one audio file to input in each, **STILL MAKE THE FOLDERS**.
