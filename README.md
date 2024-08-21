@@ -99,4 +99,24 @@ mkdir FajrAthans
 ```
 Add all you Athan Audio Files to thier corresponding folders.
 
-Make SURE to create these folders since the paths in the code point to them. Even if you only have one audio file to input in each, **STILL MAKE THE FOLDERS**.
+Make SURE to create these folders since the path in the code points to them. Even if you only have one audio file to input in each, **STILL MAKE THE FOLDERS**.
+
+Reboot your raspberry pi:
+```
+sudo reboot
+```
+
+Everything should work now. You can change some setting using the local website. Go to  http://your_raspberry_pi_ip_adress:5000
+
+
+###Adding Athan Audio files:
+
+You can only add .mp3 or .wav audio files. There are 3 ways to add Athan audio to your raspberry pi:
+
+1: Go to the webpage listed above and click on the add button, then select you audio file
+
+2: Manually add the files by downloading then on you raspberry pi and moving them to the Athans for FajrAthans Directories.
+
+3: If you already have the audio files on you computer, open terminal and navigate to the folder where the file is saved. Enter the command `scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans (or FajrAthans)
+
+
