@@ -84,9 +84,9 @@ XDG_RUNTIME_DIR=/run/user/1000
 ```
 At the bottom of the file add these lines:
 ```
-@reboot /home/umair/Desktop/startAPI.sh
-@reboot /usr/bin/python3 /home/umair/Desktop/monitor.py >> /home/umair/Desktop/monitor.log 2>&1
-0 * * * * /usr/bin/python3 /home/umair/Desktop/monitor.py >> /home/umair/Desktop/monitor.log 2>&1
+@reboot /home/pi/Desktop/startAPI.sh
+@reboot /usr/bin/python3 /home/pi/Desktop/monitor.py >> /home/pi/Desktop/monitor.log 2>&1
+0 * * * * /usr/bin/python3 /home/pi/Desktop/monitor.py >> /home/pi/Desktop/monitor.log 2>&1
 ```
 
 
