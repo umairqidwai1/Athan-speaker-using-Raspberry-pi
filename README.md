@@ -101,15 +101,11 @@ Add all you Athan Audio Files to thier corresponding folders.
 
 Make SURE to create these folders since the path in the code points to them. Even if you only have one audio file to input in each, **STILL MAKE THE FOLDERS**.
 
-Reboot your raspberry pi:
-```
-sudo reboot
-```
 
 Everything should work now. You can change some setting using the local website. Go to  http://your_raspberry_pi_ip_adress:5000
 
 
-###Adding Athan Audio files:
+### Adding Athan Audio files:
 
 You can only add .mp3 or .wav audio files. There are 3 ways to add Athan audio to your raspberry pi:
 
@@ -123,4 +119,39 @@ scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans
 ```
 change the last file to FajrAthans if the file is a Fajr Athan.
 
+### Changing IP adress to static:
 
+You IP adress will change every so often, so if you don't want the hastle of having to find you PI's new ip adress all the time, you can set a static one:
+
+Enter this into you terminal:
+```
+sudo nano /etc/resolv.conf
+```
+
+Copy and paste this code at the bottom:
+```
+interface NETWORK 
+static ip_address=STATIC_IP/24
+static routers=ROUTER_IP 
+static domain_name_servers=DNS_IP
+```
+
+Replace these names as follows:
+
+NETWORK – your network connection type: eth0 (Ethernet) or wlan0 (wireless).
+STATIC_IP – the static IP address you want to set for the Raspberry Pi.
+ROUTER_IP – the gateway IP address for your router on the local network.
+DNS_IP – the DNS IP address (typically the same as your router’s gateway address).
+
+Here is an example:
+```
+interface wlan0
+static ip_address=10.0.0.28/24
+static routers=10.0.0.1
+static domain_name_servers=10.0.0.1
+```
+
+Reboot your raspberry pi:
+```
+sudo reboot
+```
