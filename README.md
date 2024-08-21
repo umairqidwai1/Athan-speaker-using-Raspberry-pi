@@ -117,6 +117,6 @@ You can only add .mp3 or .wav audio files. There are 3 ways to add Athan audio t
 
 2: Manually add the files by downloading then on you raspberry pi and moving them to the Athans for FajrAthans Directories.
 
-3: If you already have the audio files on you computer, open terminal and navigate to the folder where the file is saved. Enter the command `scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans (or FajrAthans)
+3: If you already have the audio files on you computer, open terminal and navigate to the folder where the file is saved. Enter the command `scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans` (or FajrAthans)
 
 
