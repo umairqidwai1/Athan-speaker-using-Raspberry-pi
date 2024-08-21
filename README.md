@@ -49,6 +49,7 @@ Install redis using the commands:
 ```
 sudo apt-get update
 sudo apt-get install redis
+pip install schedule
 ```
 Set the environment variables for Redis host and port using the commands:
 ```
