@@ -93,6 +93,7 @@ At the bottom of the file add these lines:
 ### STEP 4:
 Make 2 folder, one for Fajr athan audio files and one for Regular athan audio files:
 ```
+cd /home/pi/Desktop
 mkdir Athans
 mkdir FajrAthans
 ```
