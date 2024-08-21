@@ -52,7 +52,7 @@ sudo apt-get install redis
 ```
 Set the environment variables for Redis host and port using the commands:
 ```
-export REDIS_URI=redis://localhost:6379/0
+export REDIS_URI=redis://localhost:6379
 export USE_REDIS=true
 ```
 
