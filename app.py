@@ -87,28 +87,36 @@ def set_volume(volume):
     mixer.music.set_volume(volume / 100)
 
 def get_prayer_times():
-    try:
-        response = requests.get(LinkAPI)
-        if response.status_code == 200:
-            prayer_times = response.json()
+    global prayer_times_cache, last_fetched
 
-            return {
-                'fajr_12hr': format_time(prayer_times.get('fajr', '')),
-                'sunset_12hr': format_time(prayer_times.get('sunset', '')),
-                'dohr_12hr': format_time(prayer_times.get('dohr', '')),
-                'asr_12hr': format_time(prayer_times.get('asr', '')),
-                'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
-                'icha_12hr': format_time(prayer_times.get('icha', '')),
-                'fajr': prayer_times.get('fajr', ''),
-                'dohr': prayer_times.get('dohr', ''),
-                'asr': prayer_times.get('asr', ''),
-                'maghreb': prayer_times.get('maghreb', ''),
-                'icha': prayer_times.get('icha', ''),
-            }
-        else:
-            raise Exception(f"Failed to retrieve prayer times. Status code: {response.status_code}")
-    except Exception as e:
-        print(f"Error retrieving prayer times: {e}")
+    # Get the current time
+    now = datetime.now()
+
+    # If last_fetched is None (first run) or it’s a new day, or if it’s exactly 2 AM, fetch new prayer times
+    if last_fetched is None or (now.date() != last_fetched.date()) or (now.hour == 2 and now.minute == 0):
+        try:
+            response = requests.get(LinkAPI)
+            if response.status_code == 200:
+                prayer_times = response.json()
+
+                # Update the cache and last fetched time
+                prayer_times_cache = {
+                    'fajr_12hr': format_time(prayer_times.get('fajr', '')),
+                    'sunset_12hr': format_time(prayer_times.get('sunset', '')),
+                    'dohr_12hr': format_time(prayer_times.get('dohr', '')),
+                    'asr_12hr': format_time(prayer_times.get('asr', '')),
+                    'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
+                    'icha_12hr': format_time(prayer_times.get('icha', '')),
+                }
+                last_fetched = now
+            else:
+                raise Exception(f"Failed to retrieve prayer times. Status code: {response.status_code}")
+        except Exception as e:
+            print(f"Error retrieving prayer times: {e}")
+            return None  # Or return an empty dict if preferred
+
+    # Return the cached prayer times
+    return prayer_times_cache
 
 
 def format_time(time_str):
@@ -237,35 +245,8 @@ def test_regular():
         print(f"Error testing regular athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play regular athan'})
 
-@app.route('/stop_athan', methods=['POST'])
-def stop_athan_route():
-    try:
-        stop_athan()
-        return jsonify({'status': 'success'})
-    except Exception as e:
-        print(f"Error stopping athan: {e}")
-        return jsonify({'status': 'error', 'message': 'Failed to stop athan'})
-
-
-def update_prayer_times_daily():
-    while True:
-        current_time = datetime.now().strftime('%H:%M')
-
-        # Check if it's 2:00 AM
-        if current_time == "02:00":
-            prayer_times = get_prayer_times()  # Call the function to get prayer times
-            print(f"Prayer times updated at {current_time}")
-
-            # Sleep until 2:01 AM to ensure the update doesn't happen multiple times within the same minute
-            time.sleep(60)
-
-        time.sleep(600)  # Sleep for 10 minutes before checking again
-
 
 if __name__ == '__main__':
-
-    # Start the daily update in a separate thread
-    threading.Thread(target=update_prayer_times_daily, daemon=True).start()
 
     # Start Flask server
     app.run(host='0.0.0.0', port=5000, debug=True)
