@@ -10,6 +10,10 @@ import threading
 
 app = Flask(__name__)
 
+# Initialize prayer_time_cache and last_fetched as global variables
+prayer_time_cache = None
+last_fetched = None
+
 # Mawaqit API Link for your local mosque
 LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 
