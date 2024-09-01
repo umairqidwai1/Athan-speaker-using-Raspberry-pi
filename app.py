@@ -111,6 +111,11 @@ def get_prayer_times():
                     'asr_12hr': format_time(prayer_times.get('asr', '')),
                     'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
                     'icha_12hr': format_time(prayer_times.get('icha', '')),
+                    'fajr': prayer_times.get('fajr', ''),
+                    'dohr': prayer_times.get('dohr', ''),
+                    'asr': prayer_times.get('asr', ''),
+                    'maghreb': prayer_times.get('maghreb', ''),
+                    'icha': prayer_times.get('icha', ''),
                 }
                 last_fetched = now
             else:
