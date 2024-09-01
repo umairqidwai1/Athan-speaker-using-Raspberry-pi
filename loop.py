@@ -3,14 +3,26 @@ from datetime import datetime
 from app import get_prayer_times, play_fajr_athan, play_regular_athan
 
 def main_loop():
-    while True:
-        # Load prayer times
-        prayer_times = get_prayer_times()
+    # Load prayer times initially when the program starts
+    prayer_times = get_prayer_times()
 
-        if not prayer_times:
-            print("Failed to load prayer times. Retrying...")
-            time.sleep(60)  # Wait 1 minute before retrying
-            continue  # Retry the loop
+    last_updated_date = None  # To track the last date the prayer times were updated
+
+    while True:
+        current_time = datetime.now().strftime('%H:%M')
+        current_date = datetime.now().date()
+
+        # Update prayer times at 2:00 AM
+        if current_time == "02:00" and last_updated_date != current_date:
+            prayer_times = get_prayer_times()
+
+            if not prayer_times:
+                print("Failed to load prayer times. Retrying in 1 minute...")
+                time.sleep(60)  # Wait 1 minute before retrying
+                continue  # Retry the loop
+
+            last_updated_date = current_date  # Set the last updated date
+            print("Prayer times updated at 2:00 AM.")
 
         # Extract individual prayer times (24-hour format)
         FAJR = prayer_times.get('fajr', '')
@@ -18,8 +30,6 @@ def main_loop():
         ASR = prayer_times.get('asr', '')
         MAGHRIB = prayer_times.get('maghreb', '')
         ISHA = prayer_times.get('icha', '')
-
-        current_time = datetime.now().strftime('%H:%M')
 
         # Check if the current time matches any prayer time
         if current_time == FAJR:
