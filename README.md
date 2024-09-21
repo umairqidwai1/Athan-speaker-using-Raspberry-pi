@@ -20,11 +20,11 @@ Either SSH into your Raspberry pi using the terminal on you computer using the c
 
 ### STEP 1:
 Clone mawaqit-api directory from github:
+Remeber, if you have the light version, make a file called Desktop using the command `sudo mkdir Desktop`, since all the files have to in that folder for the code to work.
 ```
-cd Desktop
+cd /home/pi/Desktop
 git clone https://github.com/mrsofiane/mawaqit-api
 ```
-to clone it.
 
 Create virtual environment:
 ```
