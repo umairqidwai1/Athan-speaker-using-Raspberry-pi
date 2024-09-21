@@ -81,15 +81,12 @@ crontab -e
 ```
 and select the first editor by typing 1.
 
-At the top of the file add the line:
-```
-XDG_RUNTIME_DIR=/run/user/1000
-```
 At the bottom of the file add these lines:
 ```
-@reboot /home/pi/Desktop/startAPI.sh
-@reboot /usr/bin/python3 /home/pi/Desktop/monitor.py >> /home/pi/Desktop/monitor.log 2>&1
-0 * * * * /usr/bin/python3 /home/pi/Desktop/monitor.py >> /home/pi/Desktop/monitor.log 2>&1
+XDG_RUNTIME_DIR=/run/user/1000
+@reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPI.sh
+@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py >> /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.log 2>&1
+0 * * * * /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py >> /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.log 2>&1
 ```
 
 
