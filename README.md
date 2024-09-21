@@ -16,12 +16,25 @@ Press CRT+SHIFT+X to open customization menu:
 
 Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming your username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
+IMPORTANT:
 
+For users running the light version of raspbian, make sure to update, install pip, pygame, flask and schedule packages, using the commands:
+```
+sudo apt install update
+sudo apt install pip
+pip install pygame
+pip install schedule
+pip install flask
+```
+Also don't fonget to make a file called Desktop using the command `sudo mkdir Desktop`, since all the files have to in that folder for the code to work.
+
+The regular version of rasbian should already include the Desktop folder and these packages by default.
 
 ### STEP 1:
 Clone mawaqit-api directory from github:
-Remeber, if you have the light version, make a file called Desktop using the command `sudo mkdir Desktop`, since all the files have to in that folder for the code to work.
+
 ```
+sudo apt install update
 cd /home/pi/Desktop
 git clone https://github.com/mrsofiane/mawaqit-api
 ```
