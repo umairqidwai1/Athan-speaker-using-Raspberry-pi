@@ -8,6 +8,9 @@ import schedule
 import time
 import threading
 
+# Initialize the mixer
+mixer.init()
+
 app = Flask(__name__)
 
 # Initialize prayer_time_cache and last_fetched as global variables
@@ -44,6 +47,9 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
+def set_volume(volume):
+    mixer.music.set_volume(volume / 100)
+    
 # Function to load volume setting from file
 def load_volume_setting():
     if os.path.exists(VOLUME_FILE):
@@ -59,6 +65,7 @@ def save_volume_setting(volume):
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 current_volume = load_volume_setting()
+set_volume(current_volume)
 
 def play_fajr_athan():
     try:
@@ -86,9 +93,6 @@ def play_regular_athan():
 
 def stop_athan():
     mixer.music.stop()
-
-def set_volume(volume):
-    mixer.music.set_volume(volume / 100)
 
 def get_prayer_times():
     global prayer_times_cache, last_fetched
