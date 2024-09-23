@@ -70,7 +70,6 @@ set_volume(current_volume)
 def play_fajr_athan():
     try:
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
-        mixer.init()
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
@@ -82,7 +81,6 @@ def play_fajr_athan():
 def play_regular_athan():
     try:
         file_path = os.path.join(ATHANS_DIR, selected_athan['regular'])
-        mixer.init()
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
