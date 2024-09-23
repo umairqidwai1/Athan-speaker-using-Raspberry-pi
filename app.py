@@ -8,9 +8,6 @@ import schedule
 import time
 import threading
 
-# Initialize the mixer
-mixer.init()
-
 app = Flask(__name__)
 
 # Initialize prayer_time_cache and last_fetched as global variables
@@ -48,6 +45,7 @@ def save_selected_athans(fajr_athan, regular_athan):
         }, f)
 
 def set_volume(volume):
+    mixer.init()
     mixer.music.set_volume(volume / 100)
     
 # Function to load volume setting from file
@@ -231,6 +229,7 @@ def update_volume():
             global current_volume
             current_volume = volume
             save_volume_setting(volume)
+            set_volume(current_volume)
             return jsonify({'status': 'success', 'volume': volume})
         else:
             return jsonify({'status': 'error', 'message': 'Invalid volume level'})
