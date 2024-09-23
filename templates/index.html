@@ -236,11 +236,53 @@
             <form method="POST">
                 <button type="submit" name="test_fajr" class="btn btn-secondary">Test Fajr Athan</button>
                 <button type="submit" name="test_regular" class="btn btn-secondary">Test Regular Athan</button>
-                <button type="submit" name="stop_athan" class="btn btn-warning">Stop Athan</button>
-                <button type="submit" name="reboot" class="btn btn-danger">Reboot Raspberry Pi</button>
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
             </form>
         </div>
     </div>
+
+    <!-- Confirm Stop Athan Modal -->
+<div class="modal fade" id="confirmStopModal" tabindex="-1" aria-labelledby="confirmStopModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmStopModalLabel">Confirm Stop Athan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to stop the Athan? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" style="display: inline;">
+                    <button type="submit" name="stop_athan" class="btn btn-warning">Stop Athan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Reboot Modal -->
+<div class="modal fade" id="confirmRebootModal" tabindex="-1" aria-labelledby="confirmRebootModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmRebootModalLabel">Confirm Reboot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to reboot the Raspberry Pi? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" style="display: inline;">
+                    <button type="submit" name="reboot" class="btn btn-danger">Reboot</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
     <!-- Bootstrap JS -->
