@@ -136,6 +136,18 @@ def format_time(time_str):
     except ValueError:
         return time_str  # Return original if conversion fails
 
+def download_youtube_audio(url, output_dir):
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'extractaudio': True,  # Download only audio
+        'audioformat': 'wav',  # Save as .wav file
+        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),  # Save file in specified directory
+        'noplaylist': True,  # Don't download playlists
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -254,6 +266,28 @@ def test_regular():
     except Exception as e:
         print(f"Error testing regular athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play regular athan'})
+
+@app.route('/download_fajr', methods=['POST'])
+def download_fajr():
+    url = request.form.get('youtube_url')
+    if url:
+        try:
+            download_youtube_audio(url, FAJR_ATHANS_DIR)
+            return jsonify({'status': 'success', 'message': 'Fajr athan downloaded successfully!'})
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)})
+    return jsonify({'status': 'error', 'message': 'No URL provided'})
+
+@app.route('/download_regular', methods=['POST'])
+def download_regular():
+    url = request.form.get('youtube_url')
+    if url:
+        try:
+            download_youtube_audio(url, ATHANS_DIR)
+            return jsonify({'status': 'success', 'message': 'Regular athan downloaded successfully!'})
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': str(e)})
+    return jsonify({'status': 'error', 'message': 'No URL provided'})
 
 
 if __name__ == '__main__':
