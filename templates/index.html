@@ -211,7 +211,11 @@
                         <form id="fajrUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_fajr_athan') }}">
                             <div class="mb-3">
                                 <label for="fajr_file" class="form-label">Select Fajr Athan File</label>
-                                <input type="file" class="form-control" id="fajr_file" name="file" accept="audio/*" required>
+                                <input type="file" class="form-control" id="fajr_file" name="file" accept="audio/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="fajr_url" class="form-label">Or Enter YouTube URL</label>
+                                <input type="text" class="form-control" id="fajr_url" name="youtube_url" placeholder="https://youtube.com/your-url">
                             </div>
                             <button type="submit" class="btn btn-primary">Upload Fajr Athan</button>
                         </form>
@@ -219,7 +223,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Upload Regular Athan Modal -->
         <div class="modal fade" id="uploadRegularModal" tabindex="-1" aria-labelledby="uploadRegularModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -232,7 +236,11 @@
                         <form id="regularUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_regular_athan') }}">
                             <div class="mb-3">
                                 <label for="regular_file" class="form-label">Select Regular Athan File</label>
-                                <input type="file" class="form-control" id="regular_file" name="file" accept="audio/*" required>
+                                <input type="file" class="form-control" id="regular_file" name="file" accept="audio/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="regular_url" class="form-label">Or Enter YouTube URL</label>
+                                <input type="text" class="form-control" id="regular_url" name="youtube_url" placeholder="https://youtube.com/your-url">
                             </div>
                             <button type="submit" class="btn btn-primary">Upload Regular Athan</button>
                         </form>
@@ -240,6 +248,7 @@
                 </div>
             </div>
         </div>
+
 
 
         <!-- System Controls Section -->
@@ -332,6 +341,35 @@
             slider.value = box.value;
             updateVolume(); // Update volume automatically
         });
+
+        //convert youtube to wav files
+        document.getElementById('downloadFajrBtn').onclick = function() {
+            const url = document.getElementById('fajr_url').value;  // Updated ID
+            fetch('/download_fajr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({youtube_url: url}),
+            }).then(response => response.json()).then(data => {
+                alert(data.message);
+                $('#uploadFajrModal').modal('hide');  // Updated modal ID
+            });
+        };
+        
+        document.getElementById('downloadRegularBtn').onclick = function() {
+            const url = document.getElementById('regular_url').value;  // Updated ID
+            fetch('/download_regular', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({youtube_url: url}),
+            }).then(response => response.json()).then(data => {
+                alert(data.message);
+                $('#uploadRegularModal').modal('hide');  // Updated modal ID
+            });
+        };
     </script>
 </body>
 
