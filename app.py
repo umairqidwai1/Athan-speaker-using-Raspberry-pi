@@ -7,6 +7,7 @@ from pygame import mixer
 import schedule
 import time
 import threading
+import yt_dlp
 
 app = Flask(__name__)
 
