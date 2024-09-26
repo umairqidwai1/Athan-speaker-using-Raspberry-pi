@@ -34,7 +34,7 @@ The regular version of rasbian should already include the Desktop folder and the
 Clone mawaqit-api directory from github:
 
 ```
-sudo apt install update
+sudo apt update
 cd /home/pi/Desktop
 git clone https://github.com/mrsofiane/mawaqit-api
 ```
