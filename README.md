@@ -20,7 +20,7 @@ IMPORTANT:
 
 For users running the light version of raspbian, make sure to update, install pip, pygame, flask and schedule packages, using the commands:
 ```
-sudo apt install update
+sudo apt update
 sudo apt install pip
 pip install pygame
 pip install schedule
@@ -34,7 +34,6 @@ The regular version of rasbian should already include the Desktop folder and the
 Clone mawaqit-api directory from github:
 
 ```
-sudo apt update
 cd /home/pi/Desktop
 git clone https://github.com/mrsofiane/mawaqit-api
 ```
