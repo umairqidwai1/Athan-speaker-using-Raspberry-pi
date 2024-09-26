@@ -337,7 +337,7 @@
             slider.value = box.value;
             updateVolume(); // Update volume automatically
         });
-        
+
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
             const youtubeUrl = form.querySelector('#fajr_url').value;
@@ -348,7 +348,6 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': '{{ csrf_token() }}'  // Ensure you have CSRF protection
                     },
                     body: new URLSearchParams({
                         'youtube_url': youtubeUrl
@@ -378,7 +377,6 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': '{{ csrf_token() }}'  // Ensure you have CSRF protection
                     },
                     body: new URLSearchParams({
                         'youtube_url': youtubeUrl
