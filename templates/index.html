@@ -338,48 +338,63 @@
             updateVolume(); // Update volume automatically
         });
         
- //download audio from youtube
-        document.getElementById('downloadFajrBtn').addEventListener('click', function () {
-            let fajrForm = document.getElementById('fajrUploadForm');
-            let fajrFile = document.getElementById('fajr_file').files[0];
-            let fajrUrl = document.getElementById('fajr_url').value;
-        
-            if (fajrFile) {
-                fajrForm.submit(); // Direct upload
-            } else if (fajrUrl) {
-                fajrForm.action = '/download_fajr_from_youtube';
-                // Show notification before submitting the form
-                alert('The file will be processed in the background. It will be ready in a few minutes.');
-                
-                // Submit form with YouTube URL
-                fajrForm.submit();
-                
-                // Redirect to the main page
-                window.location.href = '/';  // Replace '/' with the URL you want to redirect to
+        document.getElementById('downloadFajrBtn').addEventListener('click', function() {
+            const form = document.getElementById('fajrUploadForm');
+            const youtubeUrl = form.querySelector('#fajr_url').value;
+    
+            if (youtubeUrl) {
+                // Send the YouTube URL to the server via POST
+                fetch('{{ url_for("download_fajr_from_youtube") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token() }}'  // Ensure you have CSRF protection
+                    },
+                    body: new URLSearchParams({
+                        'youtube_url': youtubeUrl
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect or show success message
+                        window.location.href = "{{ url_for('index') }}";
+                    } else {
+                        alert('Error: Could not download Fajr Athan.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             } else {
-                alert('Please select a file or enter a YouTube URL.');
+                alert('Please enter a YouTube URL.');
             }
         });
-        
-        document.getElementById('downloadRegularBtn').addEventListener('click', function () {
-            let regularForm = document.getElementById('regularUploadForm');
-            let regularFile = document.getElementById('regular_file').files[0];
-            let regularUrl = document.getElementById('regular_url').value;
-        
-            if (regularFile) {
-                regularForm.submit(); // Direct upload
-            } else if (regularUrl) {
-                regularForm.action = '/download_regular_from_youtube';
-                // Show notification before submitting the form
-                alert('The file will be processed in the background. It will be ready in a few minutes.');
-                
-                // Submit form with YouTube URL
-                regularForm.submit();
-                
-                // Redirect to the main page
-                window.location.href = '/';  // Replace '/' with the URL you want to redirect to
+    
+        document.getElementById('downloadRegularBtn').addEventListener('click', function() {
+            const form = document.getElementById('regularUploadForm');
+            const youtubeUrl = form.querySelector('#regular_url').value;
+    
+            if (youtubeUrl) {
+                // Send the YouTube URL to the server via POST
+                fetch('{{ url_for("download_regular_from_youtube") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token() }}'  // Ensure you have CSRF protection
+                    },
+                    body: new URLSearchParams({
+                        'youtube_url': youtubeUrl
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Redirect or show success message
+                        window.location.href = "{{ url_for('index') }}";
+                    } else {
+                        alert('Error: Could not download Regular Athan.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             } else {
-                alert('Please select a file or enter a YouTube URL.');
+                alert('Please enter a YouTube URL.');
             }
         });
         
