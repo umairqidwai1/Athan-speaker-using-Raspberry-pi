@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raspberry Pi Athan Control</title>
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -214,10 +215,10 @@
                                 <input type="file" class="form-control" id="fajr_file" name="file" accept="audio/*">
                             </div>
                             <div class="mb-3">
-                                <label for="fajr_url" class="form-label">Or Enter YouTube URL</label>
-                                <input type="text" class="form-control" id="fajr_url" name="youtube_url" placeholder="https://youtube.com/your-url">
+                                <label for="fajr_youtube_url" class="form-label">Or enter YouTube URL</label>
+                                <input type="url" class="form-control" id="fajr_youtube_url" name="youtube_url" placeholder="https://youtube.com/..." pattern="https?://.+">
                             </div>
-                            <button type="submit" class="btn btn-primary">Upload Fajr Athan</button>
+                            <button type="submit" id="uploadFajrBtn" class="btn btn-primary">Upload Fajr Athan</button>
                         </form>
                     </div>
                 </div>
@@ -239,17 +240,15 @@
                                 <input type="file" class="form-control" id="regular_file" name="file" accept="audio/*">
                             </div>
                             <div class="mb-3">
-                                <label for="regular_url" class="form-label">Or Enter YouTube URL</label>
-                                <input type="text" class="form-control" id="regular_url" name="youtube_url" placeholder="https://youtube.com/your-url">
+                                <label for="regular_youtube_url" class="form-label">Or enter YouTube URL</label>
+                                <input type="url" class="form-control" id="regular_youtube_url" name="youtube_url" placeholder="https://youtube.com/..." pattern="https?://.+">
                             </div>
-                            <button type="submit" class="btn btn-primary">Upload Regular Athan</button>
+                            <button type="submit" id="uploadRegularBtn" class="btn btn-primary">Upload Regular Athan</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
-
 
         <!-- System Controls Section -->
         <div class="system-controls">
@@ -316,35 +315,55 @@
             document.getElementById('volume_slider').value = this.value;
         });
 
-        document.getElementById('downloadFajrBtn').addEventListener('click', function () {
-            let fajrForm = document.getElementById('fajrUploadForm');
-            let fajrFile = document.getElementById('fajr_file').files[0];
-            let fajrUrl = document.getElementById('fajr_url').value;
-
-            if (fajrFile) {
-                fajrForm.submit(); // Direct upload
-            } else if (fajrUrl) {
-                fajrForm.action = '/download_fajr_from_youtube';
-                fajrForm.submit(); // Submit form with YouTube URL
+       document.getElementById('uploadFajrBtn').onclick = function(event) {
+            event.preventDefault();  // Prevent the default form submission
+            const fajrFile = document.getElementById('fajr_file').files[0];
+            const youtubeUrl = document.getElementById('fajr_youtube_url').value;
+        
+            if (youtubeUrl) {
+                // If YouTube URL is provided, download the athan via URL
+                fetch('/download_fajr', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({youtube_url: youtubeUrl}),
+                }).then(response => response.json()).then(data => {
+                    alert(data.message);
+                    $('#uploadFajrModal').modal('hide');
+                });
+            } else if (fajrFile) {
+                // If a file is provided, submit the form for file upload
+                document.getElementById('fajrUploadForm').submit();
             } else {
-                alert('Please select a file or enter a YouTube URL.');
+                alert("Please upload a file or provide a YouTube URL.");
             }
-        });
-
-        document.getElementById('downloadRegularBtn').addEventListener('click', function () {
-            let regularForm = document.getElementById('regularUploadForm');
-            let regularFile = document.getElementById('regular_file').files[0];
-            let regularUrl = document.getElementById('regular_url').value;
-
-            if (regularFile) {
-                regularForm.submit(); // Direct upload
-            } else if (regularUrl) {
-                regularForm.action = '/download_regular_from_youtube';
-                regularForm.submit(); // Submit form with YouTube URL
+        };
+        
+        document.getElementById('uploadRegularBtn').onclick = function(event) {
+            event.preventDefault();  // Prevent the default form submission
+            const regularFile = document.getElementById('regular_file').files[0];
+            const youtubeUrl = document.getElementById('regular_youtube_url').value;
+        
+            if (youtubeUrl) {
+                // If YouTube URL is provided, download the athan via URL
+                fetch('/download_regular', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({youtube_url: youtubeUrl}),
+                }).then(response => response.json()).then(data => {
+                    alert(data.message);
+                    $('#uploadRegularModal').modal('hide');
+                });
+            } else if (regularFile) {
+                // If a file is provided, submit the form for file upload
+                document.getElementById('regularUploadForm').submit();
             } else {
-                alert('Please select a file or enter a YouTube URL.');
+                alert("Please upload a file or provide a YouTube URL.");
             }
-        });
+        };
     </script>
 
     <!-- Bootstrap JS -->
