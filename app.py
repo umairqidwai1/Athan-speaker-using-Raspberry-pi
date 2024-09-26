@@ -137,17 +137,31 @@ def format_time(time_str):
     except ValueError:
         return time_str  # Return original if conversion fails
 
-def download_youtube_audio(url, output_dir):
+def download_athan_from_youtube(url, save_path):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'extractaudio': True,  # Download only audio
-        'audioformat': 'wav',  # Save as .wav file
-        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),  # Save file in specified directory
-        'noplaylist': True,  # Don't download playlists
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',  # Keep quality the same
+            # No 'postprocessor_args' here
+        }],
+        'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),  # Save as title.mp3
+        'no-wait': True,
+        'noplaylist': True,  # Ensure only the single video is downloaded
     }
+
+    # Popup to indicate converting
+    print("Converting and uploading...")  # Replace with actual popup in your web app
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
+
+    # Cleanup: Delete any leftover .ytdl files if they exist
+    for file in os.listdir(save_path):
+        if file.endswith('.webm.ytdl'):
+            os.remove(os.path.join(save_path, file))
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -268,27 +282,23 @@ def test_regular():
         print(f"Error testing regular athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play regular athan'})
 
-@app.route('/download_fajr', methods=['POST'])
-def download_fajr():
-    url = request.form.get('youtube_url')
-    if url:
-        try:
-            download_youtube_audio(url, FAJR_ATHANS_DIR)
-            return jsonify({'status': 'success', 'message': 'Fajr athan downloaded successfully!'})
-        except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)})
-    return jsonify({'status': 'error', 'message': 'No URL provided'})
+# Route to handle Fajr Athan YouTube download
+@app.route('/download_fajr_from_youtube', methods=['POST'])
+def download_fajr_from_youtube():
+    youtube_url = request.form.get('youtube_url')
+    if youtube_url:
+        download_athan_from_youtube(youtube_url, FAJR_ATHAN_PATH)
+        return redirect(url_for('index'))  # Redirect to homepage or success page
+    return "Error: No YouTube URL provided", 400
 
-@app.route('/download_regular', methods=['POST'])
-def download_regular():
-    url = request.form.get('youtube_url')
-    if url:
-        try:
-            download_youtube_audio(url, ATHANS_DIR)
-            return jsonify({'status': 'success', 'message': 'Regular athan downloaded successfully!'})
-        except Exception as e:
-            return jsonify({'status': 'error', 'message': str(e)})
-    return jsonify({'status': 'error', 'message': 'No URL provided'})
+# Route to handle Regular Athan YouTube download
+@app.route('/download_regular_from_youtube', methods=['POST'])
+def download_regular_from_youtube():
+    youtube_url = request.form.get('youtube_url')
+    if youtube_url:
+        download_athan_from_youtube(youtube_url, REGULAR_ATHAN_PATH)
+        return redirect(url_for('index'))  # Redirect to homepage or success page
+    return "Error: No YouTube URL provided", 400
 
 
 if __name__ == '__main__':
