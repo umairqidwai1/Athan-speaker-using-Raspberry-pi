@@ -307,43 +307,82 @@
 
 <!-- JavaScript -->
     <script>
-        document.getElementById('volume_slider').addEventListener('input', function () {
-            document.getElementById('volume_box').value = this.value;
+        
+        // Sync slider and input box
+        const slider = document.getElementById('volume_slider');
+        const box = document.getElementById('volume_box');
+
+        function updateVolume() {
+            const volume = slider.value;
+            fetch('/update_volume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ volume: volume }),
+            }).then(response => response.json())
+              .then(data => {
+                  console.log('Volume updated:', data);
+              })
+              .catch(error => {
+                  console.error('Error updating volume:', error);
+              });
+        }
+        slider.addEventListener('input', function() {
+            box.value = slider.value;
+            updateVolume(); // Update volume automatically
         });
 
-        document.getElementById('volume_box').addEventListener('input', function () {
-            document.getElementById('volume_slider').value = this.value;
+        box.addEventListener('input', function() {
+            slider.value = box.value;
+            updateVolume(); // Update volume automatically
         });
-
+        
+ //download audio from youtube
         document.getElementById('downloadFajrBtn').addEventListener('click', function () {
             let fajrForm = document.getElementById('fajrUploadForm');
             let fajrFile = document.getElementById('fajr_file').files[0];
             let fajrUrl = document.getElementById('fajr_url').value;
-
+        
             if (fajrFile) {
                 fajrForm.submit(); // Direct upload
             } else if (fajrUrl) {
                 fajrForm.action = '/download_fajr_from_youtube';
-                fajrForm.submit(); // Submit form with YouTube URL
+                // Show notification before submitting the form
+                alert('The file will be processed in the background. It will be ready in a few minutes.');
+                
+                // Submit form with YouTube URL
+                fajrForm.submit();
+                
+                // Redirect to the main page
+                window.location.href = '/';  // Replace '/' with the URL you want to redirect to
             } else {
                 alert('Please select a file or enter a YouTube URL.');
             }
         });
-
+        
         document.getElementById('downloadRegularBtn').addEventListener('click', function () {
             let regularForm = document.getElementById('regularUploadForm');
             let regularFile = document.getElementById('regular_file').files[0];
             let regularUrl = document.getElementById('regular_url').value;
-
+        
             if (regularFile) {
                 regularForm.submit(); // Direct upload
             } else if (regularUrl) {
                 regularForm.action = '/download_regular_from_youtube';
-                regularForm.submit(); // Submit form with YouTube URL
+                // Show notification before submitting the form
+                alert('The file will be processed in the background. It will be ready in a few minutes.');
+                
+                // Submit form with YouTube URL
+                regularForm.submit();
+                
+                // Redirect to the main page
+                window.location.href = '/';  // Replace '/' with the URL you want to redirect to
             } else {
                 alert('Please select a file or enter a YouTube URL.');
             }
         });
+        
     </script>
 
     <!-- Bootstrap JS -->
