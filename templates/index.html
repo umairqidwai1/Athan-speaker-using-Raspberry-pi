@@ -338,12 +338,14 @@
             updateVolume(); // Update volume automatically
         });
 
+        // Fajr Athan Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
             const youtubeUrl = form.querySelector('#fajr_url').value;
-    
+            const fileInput = form.querySelector('#fajr_file').files[0];
+        
             if (youtubeUrl) {
-                // Send the YouTube URL to the server via POST
+                // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
                     method: 'POST',
                     headers: {
@@ -362,17 +364,22 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+            } else if (fileInput) {
+                // If file is selected, submit the form normally
+                form.submit();
             } else {
-                alert('Please enter a YouTube URL.');
+                alert('Please provide either a YouTube URL or an audio file.');
             }
         });
-    
+        
+        // Regular Athan Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
             const form = document.getElementById('regularUploadForm');
             const youtubeUrl = form.querySelector('#regular_url').value;
-    
+            const fileInput = form.querySelector('#regular_file').files[0];
+        
             if (youtubeUrl) {
-                // Send the YouTube URL to the server via POST
+                // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_regular_from_youtube") }}', {
                     method: 'POST',
                     headers: {
@@ -391,8 +398,11 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+            } else if (fileInput) {
+                // If file is selected, submit the form normally
+                form.submit();
             } else {
-                alert('Please enter a YouTube URL.');
+                alert('Please provide either a YouTube URL or an audio file.');
             }
         });
         
