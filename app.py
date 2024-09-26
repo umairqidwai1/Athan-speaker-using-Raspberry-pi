@@ -287,7 +287,7 @@ def test_regular():
 def download_fajr_from_youtube():
     youtube_url = request.form.get('youtube_url')
     if youtube_url:
-        download_athan_from_youtube(youtube_url, FAJR_ATHAN_PATH)
+        download_athan_from_youtube(youtube_url, FAJR_ATHANS_DIR)
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
 
@@ -296,7 +296,7 @@ def download_fajr_from_youtube():
 def download_regular_from_youtube():
     youtube_url = request.form.get('youtube_url')
     if youtube_url:
-        download_athan_from_youtube(youtube_url, REGULAR_ATHAN_PATH)
+        download_athan_from_youtube(youtube_url, ATHANS_DIR)
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
 
