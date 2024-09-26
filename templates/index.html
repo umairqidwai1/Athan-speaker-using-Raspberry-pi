@@ -341,10 +341,13 @@
         // Fajr Athan Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
-            const youtubeUrl = form.querySelector('#fajr_url').value;
+            const youtubeUrl = form.querySelector('#fajr_url').value.trim();
             const fileInput = form.querySelector('#fajr_file').files[0];
         
             if (youtubeUrl) {
+                // Show alert message before processing
+                alert('Converting and Uploading...\nThis will take about 5 minutes.');
+        
                 // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
                     method: 'POST',
@@ -357,7 +360,7 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Redirect or show success message
+                        // Redirect after alert is dismissed
                         window.location.href = "{{ url_for('index') }}";
                     } else {
                         alert('Error: Could not download Fajr Athan.');
@@ -375,10 +378,13 @@
         // Regular Athan Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
             const form = document.getElementById('regularUploadForm');
-            const youtubeUrl = form.querySelector('#regular_url').value;
+            const youtubeUrl = form.querySelector('#regular_url').value.trim();
             const fileInput = form.querySelector('#regular_file').files[0];
         
             if (youtubeUrl) {
+                // Show alert message before processing
+                alert('Converting and Uploading...\nThis will take about 5 minutes.');
+        
                 // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_regular_from_youtube") }}', {
                     method: 'POST',
@@ -391,7 +397,7 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Redirect or show success message
+                        // Redirect after alert is dismissed
                         window.location.href = "{{ url_for('index') }}";
                     } else {
                         alert('Error: Could not download Regular Athan.');
@@ -405,7 +411,8 @@
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
-        
+
+
     </script>
 
     <!-- Bootstrap JS -->
