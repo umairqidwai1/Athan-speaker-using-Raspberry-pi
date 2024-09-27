@@ -250,6 +250,14 @@
             </div>
         </div>
 
+        <!-- Modal Structure -->
+        <div id="uploadModal" class="modal">
+            <div class="modal-content">
+                <h4>Uploading...</h4>
+                <p>This may take about 5 minutes. You can safely close the app.</p>
+            </div>
+        </div>
+
         <!-- System Controls Section -->
         <div class="system-controls">
             <h2>System Controls</h2>
@@ -338,6 +346,18 @@
             updateVolume(); // Update volume automatically
         });
 
+        // Function to show modal
+        function showModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.style.display = "block"; // Show the modal
+        }
+        
+        // Function to hide modal
+        function hideModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.style.display = "none"; // Hide the modal
+        }
+        
         // Fajr Athan Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
@@ -345,8 +365,8 @@
             const fileInput = form.querySelector('#fajr_file').files[0];
         
             if (youtubeUrl) {
-                // Show alert message before processing
-                alert('Converting and Uploading...\nThis will take about 5 minutes.');
+                // Show modal before processing
+                showModal();
         
                 // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
@@ -360,13 +380,18 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Redirect after alert is dismissed
+                        // Hide modal and redirect after upload starts
+                        hideModal();
                         window.location.href = "{{ url_for('index') }}";
                     } else {
+                        hideModal();
                         alert('Error: Could not download Fajr Athan.');
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    hideModal();
+                    console.error('Error:', error);
+                });
             } else if (fileInput) {
                 // If file is selected, submit the form normally
                 form.submit();
@@ -382,8 +407,8 @@
             const fileInput = form.querySelector('#regular_file').files[0];
         
             if (youtubeUrl) {
-                // Show alert message before processing
-                alert('Converting and Uploading...\nThis will take about 5 minutes.');
+                // Show modal before processing
+                showModal();
         
                 // Submit form with YouTube URL via fetch
                 fetch('{{ url_for("download_regular_from_youtube") }}', {
@@ -397,13 +422,18 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        // Redirect after alert is dismissed
+                        // Hide modal and redirect after upload starts
+                        hideModal();
                         window.location.href = "{{ url_for('index') }}";
                     } else {
+                        hideModal();
                         alert('Error: Could not download Regular Athan.');
                     }
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    hideModal();
+                    console.error('Error:', error);
+                });
             } else if (fileInput) {
                 // If file is selected, submit the form normally
                 form.submit();
@@ -411,7 +441,6 @@
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
-
 
     </script>
 
