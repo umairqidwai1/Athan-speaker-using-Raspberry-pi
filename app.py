@@ -347,6 +347,33 @@ def download_regular_from_youtube():
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
 
+#Route to handle deleting Athan files
+@app.route('/remove_athan', methods=['POST'])
+def remove_athan():
+    athan_to_remove = request.form.get('athan_to_remove')
+    audio_type = request.form.get('audio_type')  # Get audio type (fajr or regular)
+
+    if athan_to_remove:
+        try:
+            # Determine the directory based on the audio type
+            if audio_type == 'fajr':
+                file_path = os.path.join(FAJR_ATHANS_DIR, athan_to_remove)
+            elif audio_type == 'regular':
+                file_path = os.path.join(ATHANS_DIR, athan_to_remove)
+            else:
+                raise ValueError("Invalid audio type specified.")
+
+            # Remove the file
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                print(f"{athan_to_remove} has been removed successfully.")
+            else:
+                print(f"{athan_to_remove} does not exist.")
+        except Exception as e:
+            print(f"Error removing {athan_to_remove}: {str(e)}")
+
+    return redirect(url_for('index'))  # Redirect back to the index view
+
 # Start the background thread when the Flask app starts
 start_background_thread()
 
