@@ -118,7 +118,12 @@
         .form-row button {
             flex: 1;
             font-size: 0.8rem;
-            min-width: 100px;
+            min-width: 50px;
+        }
+        
+        .remove-btn {
+            font-size: 0.875rem;
+            min-width: 70px;
         }
 
         .form-row button.add-btn {
@@ -176,6 +181,7 @@
                     <label for="fajr_audio" class="form-label">Fajr Athan:</label>
                 </div>
                 <div class="form-row">
+                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="fajr">Remove</button>
                     <select name="fajr_audio" class="form-select">
                         {% for file in fajr_athan_files %}
                         <option value="{{ file }}" {% if selected_fajr_athan == file %}selected{% endif %}>{{ file }}</option>
@@ -183,11 +189,12 @@
                     </select>
                     <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadFajrModal">Add</button>
                 </div>
-
+        
                 <div class="form-row">
                     <label for="regular_audio" class="form-label">Regular Athan:</label>
                 </div>
                 <div class="form-row">
+                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="regular">Remove</button>
                     <select name="regular_audio" class="form-select">
                         {% for file in regular_athan_files %}
                         <option value="{{ file }}" {% if selected_regular_athan == file %}selected{% endif %}>{{ file }}</option>
@@ -195,7 +202,7 @@
                     </select>
                     <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadRegularModal">Add</button>
                 </div>
-
+        
                 <button type="submit" name="save_changes" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
@@ -469,6 +476,15 @@
             } else {
                 alert('Please provide either a YouTube URL or an audio file.');
             }
+        });
+
+        // Script to handle the removal confirmation
+        document.querySelectorAll('.remove-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const selectElement = button.nextElementSibling; // The select element after the button
+                const selectedValue = selectElement.value;
+                document.getElementById('athan_to_remove').value = selectedValue;
+            });
         });
 
     </script>
