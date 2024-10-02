@@ -486,6 +486,7 @@
                 const selectElement = button.nextElementSibling; // The select element after the button
                 const selectedValue = selectElement.value;
                 document.getElementById('athan_to_remove').value = selectedValue;
+                document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
 
