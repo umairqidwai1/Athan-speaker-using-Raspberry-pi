@@ -16,14 +16,15 @@ Press CRT+SHIFT+X to open customization menu:
 
 Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming your username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
-IMPORTANT:
-Don't fonget to make a file called Desktop using the command `sudo mkdir Desktop`, since all the files have to be in that folder for the code to work.
+###IMPORTANT:
+For Rasberry pi lite os, Don't forget to make a file called Desktop using the command `mkdir Desktop`, since all the files have to be in that folder for the code to work.
 
 The regular version of rasbian should already include the Desktop folder and these packages by default.
 
-### STEP 0
+### STEP 0:
 Create and activate virual env:
 ```
+cd /home/pi/Desktop
 python -m  venv env
 source env/bin/activate
 ```
@@ -78,6 +79,7 @@ Make the startAPI.sh file executable
 ```
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
 chmod +x startAPI.sh
+chmod +x startAPP.sh
 ```
 Run the command:
 ```
@@ -89,8 +91,7 @@ At the bottom of the file add these lines:
 ```
 XDG_RUNTIME_DIR=/run/user/1000
 @reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPI.sh
-@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py >> /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.log 2>&1
-0 * * * * /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py >> /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.log 2>&1
+@reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
 ```
 
 
@@ -121,39 +122,8 @@ You can only add .mp3 or .wav audio files. There are 3 ways to add Athan audio t
 ```
 scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans
 ```
-change the last file to FajrAthans if the file is a Fajr Athan.
+change the last part to FajrAthans if the file is a Fajr Athan.
 
-### Changing IP adress to static:
-
-You IP adress will change every so often, so if you don't want the hastle of having to find you PI's new ip adress all the time, you can set a static one:
-
-Enter this into you terminal:
-```
-sudo nano /etc/resolv.conf
-```
-
-Copy and paste this code at the bottom:
-```
-interface NETWORK 
-static ip_address=STATIC_IP/24
-static routers=ROUTER_IP 
-static domain_name_servers=DNS_IP
-```
-
-Replace these names as follows:
-
-NETWORK – your network connection type: eth0 (Ethernet) or wlan0 (wireless).
-STATIC_IP – the static IP address you want to set for the Raspberry Pi.
-ROUTER_IP – the gateway IP address for your router on the local network.
-DNS_IP – the DNS IP address (typically the same as your router’s gateway address).
-
-Here is an example:
-```
-interface wlan0
-static ip_address=10.0.0.28/24
-static routers=10.0.0.1
-static domain_name_servers=10.0.0.1
-```
 
 Reboot your raspberry pi:
 ```
