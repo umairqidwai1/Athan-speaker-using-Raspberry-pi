@@ -181,7 +181,7 @@
                     <label for="fajr_audio" class="form-label">Fajr Athan:</label>
                 </div>
                 <div class="form-row">
-                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="fajr">Remove</button>
+                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="fajr" style="margin-right: 10px;">Remove</button>
                     <select name="fajr_audio" class="form-select">
                         {% for file in fajr_athan_files %}
                         <option value="{{ file }}" {% if selected_fajr_athan == file %}selected{% endif %}>{{ file }}</option>
@@ -194,7 +194,7 @@
                     <label for="regular_audio" class="form-label">Regular Athan:</label>
                 </div>
                 <div class="form-row">
-                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="regular">Remove</button>
+                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="regular" style="margin-right: 10px;">Remove</button>
                     <select name="regular_audio" class="form-select">
                         {% for file in regular_athan_files %}
                         <option value="{{ file }}" {% if selected_regular_athan == file %}selected{% endif %}>{{ file }}</option>
