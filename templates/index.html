@@ -346,17 +346,16 @@
                 Are you sure you want to remove the selected Athan? This action cannot be undone.
             </div>
             <div class="modal-footer text-center">
-                <form method="POST" action="/remove_athan">
+                <button type="button" class="btn btn-secondary modal-btn" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="/remove_athan" style="display: inline;">
                     <input type="hidden" id="athan_to_remove" name="athan_to_remove" value="">
                     <input type="hidden" id="audio_type" name="audio_type" value="">
-                    <button type="submit" class="btn btn-danger">Remove</button>
+                    <button type="submit" class="btn btn-danger modal-btn">Remove</button>
                 </form>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
-
 
 
 <!-- JavaScript -->
