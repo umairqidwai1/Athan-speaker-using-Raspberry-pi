@@ -48,7 +48,7 @@ def save_selected_athans(fajr_athan, regular_athan):
 def set_volume(volume):
     mixer.init()
     mixer.music.set_volume(volume / 100)
-    
+
 # Function to load volume setting from file
 def load_volume_setting():
     if os.path.exists(VOLUME_FILE):
@@ -183,23 +183,23 @@ def main_loop():
 # Start the main loop in a separate thread
 def start_background_thread():
     threading.Thread(target=main_loop, daemon=True).start()
-    
+
 def download_athan_from_youtube(url, save_path):
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            
+
         }],
         'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),  # Save as title.mp3
         'no-wait': True,
         'noplaylist': True,  # Ensure only the single video is downloaded
     }
-    
+
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-        
+
     # Cleanup: Delete any leftover .ytdl files if they exist
     for file in os.listdir(save_path):
         if file.endswith('.webm.ytdl'):
