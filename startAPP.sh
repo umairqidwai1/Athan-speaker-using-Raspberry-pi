@@ -2,4 +2,4 @@
 cd /home/pi/Desktop
 source env/bin/activate
 cd Athan-speaker-using-Raspberry-pi
-sudo python3 app.py
+sudo env "PATH=$PATH" python app.py 
