@@ -282,16 +282,13 @@
         </div>
 
 
-        <!-- System Controls Section -->
-        <div class="system-controls">
-            <h2>System Controls</h2>
-            <form method="POST">
-                <button type="submit" name="test_fajr" class="btn btn-secondary">Test Fajr Athan</button>
-                <button type="submit" name="test_regular" class="btn btn-secondary">Test Regular Athan</button>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
-            </form>
-        </div>
+    <!-- System Controls Section -->
+    <div class="system-controls">
+        <h2>System Controls</h2>
+        <button type="button" class="btn btn-secondary" id="testFajrBtn">Test Fajr Athan</button>
+        <button type="button" class="btn btn-secondary" id="testRegularBtn">Test Regular Athan</button>
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
     </div>
 
     
@@ -415,7 +412,7 @@
             updateVolume(); // Update volume automatically
         });
 
-        // Fajr Athan Button Click
+        // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
             const youtubeUrl = form.querySelector('#fajr_url').value.trim();
@@ -459,7 +456,7 @@
             }
         });
         
-        // Regular Athan Button Click
+        // Regular Athan Upload Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
             const form = document.getElementById('regularUploadForm');
             const youtubeUrl = form.querySelector('#regular_url').value.trim();
@@ -510,6 +507,42 @@
                 const selectedValue = selectElement.value;
                 document.getElementById('athan_to_remove').value = selectedValue;
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
+            });
+        });
+
+        document.getElementById('testFajrBtn').addEventListener('click', function() {
+            fetch('/test_fajr', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Fajr Athan played successfully');
+                } else {
+                    alert('Error playing Fajr Athan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    
+        document.getElementById('testRegularBtn').addEventListener('click', function() {
+            fetch('/test_regular', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Regular Athan played successfully');
+                } else {
+                    alert('Error playing Regular Athan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
         });
 
