@@ -190,20 +190,16 @@ def download_athan_from_youtube(url, save_path):
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
-            'preferredquality': '192',  # Keep quality the same
-            # No 'postprocessor_args' here
+            
         }],
         'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),  # Save as title.mp3
         'no-wait': True,
         'noplaylist': True,  # Ensure only the single video is downloaded
     }
-
-    # Popup to indicate converting
-    print("Converting and uploading...")  # Replace with actual popup in your web app
-
+    
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
-
+        
     # Cleanup: Delete any leftover .ytdl files if they exist
     for file in os.listdir(save_path):
         if file.endswith('.webm.ytdl'):
