@@ -421,15 +421,15 @@
             const fileInput = form.querySelector('#fajr_file').files[0];
         
             if (youtubeUrl) {
-                // Show the custom modal
-                const modal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
-                modal.show();
+                // Dismiss the upload modal (if it's open)
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
+                if (uploadModal) {
+                    uploadModal.hide(); // Dismiss the first modal
+                }
         
-                // Handle "OK" button click inside the modal
-                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    // Redirect to the main page
-                    window.location.href = "{{ url_for('index') }}";
-                });
+                // Show the confirmation modal
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
+                confirmModal.show();
         
                 // Submit form with YouTube URL via fetch (runs in background)
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
@@ -450,6 +450,11 @@
                     console.error('Error:', error);
                 });
         
+                // Handle the "OK" button to redirect, but don't dismiss the confirmation modal
+                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
+                    window.location.href = "{{ url_for('index') }}"; // Redirect to the main page
+                });
+        
             } else if (fileInput) {
                 // If file is selected, submit the form normally
                 form.submit();
@@ -465,15 +470,15 @@
             const fileInput = form.querySelector('#regular_file').files[0];
         
             if (youtubeUrl) {
-                // Show the custom modal
-                const modal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
-                modal.show();
+                // Dismiss the upload modal (if it's open)
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadRegularModal'));
+                if (uploadModal) {
+                    uploadModal.hide(); // Dismiss the first modal
+                }
         
-                // Handle "OK" button click inside the modal
-                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    // Redirect to the main page
-                    window.location.href = "{{ url_for('index') }}";
-                });
+                // Show the confirmation modal
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
+                confirmModal.show();
         
                 // Submit form with YouTube URL via fetch (runs in background)
                 fetch('{{ url_for("download_regular_from_youtube") }}', {
@@ -494,6 +499,11 @@
                     console.error('Error:', error);
                 });
         
+                // Handle the "OK" button to redirect, but don't dismiss the confirmation modal
+                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
+                    window.location.href = "{{ url_for('index') }}"; // Redirect to the main page
+                });
+        
             } else if (fileInput) {
                 // If file is selected, submit the form normally
                 form.submit();
@@ -511,7 +521,8 @@
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
-
+        
+        // test fajr athan button
         document.getElementById('testFajrBtn').addEventListener('click', function() {
             fetch('/test_fajr', {
                 method: 'POST',
@@ -530,6 +541,7 @@
             });
         });
     
+        // test regular athan button
         document.getElementById('testRegularBtn').addEventListener('click', function() {
             fetch('/test_regular', {
                 method: 'POST',
