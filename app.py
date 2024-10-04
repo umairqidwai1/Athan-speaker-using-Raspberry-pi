@@ -11,8 +11,6 @@ import yt_dlp
 
 app = Flask(__name__)
 
-#TEST
-
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 last_fetched = None
