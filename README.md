@@ -31,6 +31,7 @@ source env/bin/activate
 Update and Install packages:
 ```
 sudo apt-get update
+sudo apt install git
 sudo apt install pip
 pip install pygame
 pip install schedule
