@@ -19,12 +19,12 @@ last_fetched = None
 LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 
 # Define directories for athan files
-ATHANS_DIR = '/home/pi/Desktop/Athans'
-FAJR_ATHANS_DIR = '/home/pi/Desktop/FajrAthans'
+ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
+FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
 
 # File to store selected athans
-SELECTION_FILE = '/home/pi/selected_athans.json'
-VOLUME_FILE = '/home/pi/volume_setting.json'
+SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
+VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
 
 # Function to load selected athans from file
 def load_selected_athans():
