@@ -80,6 +80,7 @@ Make the startAPI.sh file executable
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
 chmod +x startAPI.sh
 chmod +x startAPP.sh
+chmod +x auto_pull.sh
 ```
 Run the command:
 ```
@@ -92,6 +93,8 @@ At the bottom of the file add these lines:
 XDG_RUNTIME_DIR=/run/user/1000
 @reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPI.sh
 @reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
+@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py &
+* * * * * /bin/bash /home/pi//Desktop/Athan-speaker-using-Raspberry-pi/auto_pull.sh
 ```
 
 
