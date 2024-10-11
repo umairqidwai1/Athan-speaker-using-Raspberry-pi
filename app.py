@@ -8,6 +8,7 @@ import schedule
 import time
 import threading
 import yt_dlp
+from evdev import InputDevice, ecodes, categorize
 
 app = Flask(__name__)
 
@@ -61,6 +62,7 @@ def load_volume_setting():
 def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
+        
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 current_volume = load_volume_setting()
@@ -180,9 +182,35 @@ def main_loop():
 
         time.sleep(1)  # Sleep for a second before checking again
 
+# Background thread to listen for USB speaker volume button presses
+def listen_for_volume_buttons():
+    device = InputDevice('/dev/input/event0')  # Replace with the correct event file for your device
+    global current_volume
+    
+    for event in device.read_loop():
+        if event.type == ecodes.EV_KEY:
+            key_event = categorize(event)
+            
+            # Check for volume down key
+            if key_event.keycode == 'KEY_VOLUMEDOWN' and key_event.keystate == key_event.key_down:
+                if current_volume > 0:
+                    current_volume -= 5
+                    set_volume(current_volume)
+                    save_volume_setting(current_volume)
+                print(f"Volume Down: {current_volume}")
+            
+            # Check for volume up key
+            elif key_event.keycode == 'KEY_VOLUMEUP' and key_event.keystate == key_event.key_down:
+                if current_volume < 100:
+                    current_volume += 5
+                    set_volume(current_volume)
+                    save_volume_setting(current_volume)
+                print(f"Volume Up: {current_volume}")
+                
 # Start the main loop in a separate thread
 def start_background_thread():
     threading.Thread(target=main_loop, daemon=True).start()
+    threading.Thread(target=listen_for_volume_buttons, daemon=True).start()
 
 def download_athan_from_youtube(url, save_path):
     ydl_opts = {
@@ -306,6 +334,15 @@ def update_volume():
     except Exception as e:
         print(f"Error updating volume: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to update volume'})
+
+@app.route('/get_volume', methods=['GET'])
+def get_volume():
+    try:
+        return jsonify({'status': 'success', 'volume': current_volume})
+    except Exception as e:
+        print(f"Error getting volume: {e}")
+        return jsonify({'status': 'error', 'message': 'Failed to get volume'})
+
 
 @app.route('/test_fajr', methods=['POST'])
 def test_fajr():
