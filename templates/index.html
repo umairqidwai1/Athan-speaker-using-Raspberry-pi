@@ -415,6 +415,27 @@
             updateVolume(); // Update volume automatically
         });
 
+        // Function to fetch the current volume from the server (AJAX polling)
+        function getVolume() {
+            fetch('/get_volume', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const currentVolume = data.volume;
+                    slider.value = currentVolume;  // Update slider
+                    box.value = currentVolume;     // Update box
+                }
+            })
+            .catch(error => {
+                console.log('Error getting volume:', error);
+            });
+        }
+        
+        // Call getVolume every 2 seconds to update the slider and box
+        setInterval(getVolume, 1000);
+
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
