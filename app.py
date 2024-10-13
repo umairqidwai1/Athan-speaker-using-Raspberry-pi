@@ -141,6 +141,7 @@ def format_time(time_str):
 
 def main_loop():
     # Load prayer times initially when the program starts
+    print("Main loop started")
     prayer_times = get_prayer_times()
 
     last_updated_date = None  # To track the last date the prayer times were updated
@@ -184,6 +185,7 @@ def main_loop():
 
 # Background thread to listen for USB speaker volume button presses
 def listen_for_volume_buttons():
+    print("Listening for volume buttons started")
     device = InputDevice('/dev/input/event0')  # Replace with the correct event file for your device
     global current_volume
     
