@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask_socketio import SocketIO, emit
 import os
 import json
 import requests
@@ -8,8 +9,10 @@ import schedule
 import time
 import threading
 import yt_dlp
+import evdev
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
@@ -25,6 +28,7 @@ FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
+device = evdev.InputDevice('/dev/input/event0')
 
 # Function to load selected athans from file
 def load_selected_athans():
@@ -137,6 +141,30 @@ def format_time(time_str):
     except ValueError:
         return time_str  # Return original if conversion fails
 
+# Handle volume adjustment from button presses
+def handle_volume_buttons():
+    global current_volume
+    for event in device.read_loop():
+        if event.type == evdev.ecodes.EV_KEY:
+            key_event = evdev.categorize(event)
+            if key_event.keycode == 'KEY_VOLUMEUP' and key_event.keystate == evdev.KeyEvent.key_down:
+                if current_volume < 100:
+                    current_volume += 5
+                    current_volume = min(100, current_volume)  # Ensure volume is between 0-100
+                    set_volume(current_volume)
+                    save_volume_setting(current_volume)
+                    socketio.emit('volume_update', {'volume': current_volume})
+
+            elif key_event.keycode == 'KEY_VOLUMEDOWN' and key_event.keystate == evdev.KeyEvent.key_down:
+                if current_volume > 0:
+                    current_volume -= 5
+                    current_volume = max(0, current_volume)  # Ensure volume is between 0-100
+                    set_volume(current_volume)
+                    save_volume_setting(current_volume)
+                    socketio.emit('volume_update', {'volume': current_volume})
+
+
+
 def main_loop():
     # Load prayer times initially when the program starts
     prayer_times = get_prayer_times()
@@ -183,6 +211,8 @@ def main_loop():
 # Start the main loop in a separate thread
 def start_background_thread():
     threading.Thread(target=main_loop, daemon=True).start()
+    threading.Thread(target=handle_volume_buttons, daemon=True).start()
+
 
 def download_athan_from_youtube(url, save_path):
     ydl_opts = {
@@ -300,6 +330,8 @@ def update_volume():
             current_volume = volume
             save_volume_setting(volume)
             set_volume(current_volume)
+            # Emit volume change to all connected clients
+            socketio.emit('volume_update', {'volume': current_volume})
             return jsonify({'status': 'success', 'volume': volume})
         else:
             return jsonify({'status': 'error', 'message': 'Invalid volume level'})
@@ -374,5 +406,4 @@ def remove_athan():
 start_background_thread()
 
 if __name__ == '__main__':
-    # Start Flask server
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000)
