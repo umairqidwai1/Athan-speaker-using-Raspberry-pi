@@ -383,11 +383,14 @@
 
 
 <!-- JavaScript -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <script>
         
         // Sync slider and input box
         const slider = document.getElementById('volume_slider');
         const box = document.getElementById('volume_box');
+        // WebSocket setup to receive live updates
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
 
         function updateVolume() {
             const volume = slider.value;
@@ -415,6 +418,11 @@
             updateVolume(); // Update volume automatically
         });
 
+        // Handle incoming volume updates from the server (via WebSocket)
+        socket.on('volume_update', function(data) {
+            slider.value = data.volume;
+            box.value = data.volume;
+        });
 
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
