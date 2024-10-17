@@ -330,8 +330,6 @@ def update_volume():
             current_volume = volume
             save_volume_setting(volume)
             set_volume(current_volume)
-            # Emit volume change to all connected clients
-            socketio.emit('volume_update', {'volume': current_volume})
             return jsonify({'status': 'success', 'volume': volume})
         else:
             return jsonify({'status': 'error', 'message': 'Invalid volume level'})
