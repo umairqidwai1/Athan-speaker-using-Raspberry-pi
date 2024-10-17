@@ -208,6 +208,8 @@ def main_loop():
             play_regular_athan()
         elif current_time == ISHA:
             play_regular_athan()
+        elif current_time == "14:40":
+            play_regular_athan()
 
         time.sleep(1)  # Sleep for a second before checking again
 
