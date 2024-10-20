@@ -132,7 +132,6 @@ def get_prayer_times():
     # Return the cached prayer times
     return prayer_times_cache
 
-
 def format_time(time_str):
     """Convert 24-hour time format to 12-hour time format with AM/PM."""
     try:
