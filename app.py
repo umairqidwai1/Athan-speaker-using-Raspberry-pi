@@ -18,9 +18,6 @@ socketio = SocketIO(app)
 prayer_time_cache = None
 last_fetched = None
 
-# Load the mosque URL on startup
-LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
-
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
 FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
@@ -42,6 +39,9 @@ def load_mosque_url():
         with open(MOSQUE_FILE, 'r') as f:
             return json.load(f).get('mosque_url')
     return "https://mawaqit.net/en/m/noor-dublin"  # Default URL if no file is found
+
+# Load the mosque URL on startup
+LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
     
 # Function to load selected athans from file
 def load_selected_athans():
