@@ -93,10 +93,9 @@ and select the first editor by typing 1.
 At the bottom of the file add these lines:
 ```
 XDG_RUNTIME_DIR=/run/user/1000
-@reboot amixer set 'PCM' 100%
 @reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPI.sh
-@reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
-@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py &
+@reboot sleep 30 && /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
+@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py
 * * * * * /bin/bash /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/auto_pull.sh
 ```
 
