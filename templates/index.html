@@ -183,7 +183,7 @@
                 <li class="list-group-item"><strong>Maghrib:</strong> {{ prayer_times['maghreb_12hr'] }}</li>
                 <li class="list-group-item"><strong>Isha:</strong> {{ prayer_times['icha_12hr'] }}</li>
                 <!-- Button to open the modal -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mosqueModal">Choose Mosque</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mosqueModal">Choose Mosque</button>
             </ul>
         </div>
 
@@ -389,7 +389,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="mosqueModalLabel">Enter Mosque URL</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
