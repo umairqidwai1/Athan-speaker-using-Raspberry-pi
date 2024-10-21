@@ -108,7 +108,7 @@ def play_regular_athan():
 def stop_athan():
     mixer.music.stop()
 
-def get_prayer_times():
+def get_prayer_times(force_refresh=False):
     global prayer_times_cache, last_fetched
 
     # Get the current time
