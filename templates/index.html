@@ -451,6 +451,28 @@
             box.value = data.volume;
         });
 
+        // choose mosque
+        document.getElementById('saveMosqueUrl').addEventListener('click', function () {
+            const mosqueUrl = document.getElementById('mosqueUrl').value;
+            fetch('/update-mosque', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mosqueUrl: mosqueUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Mosque updated successfully!');
+                    // Reload the prayer times section without refreshing the entire page
+                    location.reload();
+                } else {
+                    alert('Error updating mosque!');
+                }
+            });
+        });
+
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
             const form = document.getElementById('fajrUploadForm');
