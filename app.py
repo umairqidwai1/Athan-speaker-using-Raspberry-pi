@@ -28,8 +28,21 @@ FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
+MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
 
+# Function to save mosque URL to a file
+def save_mosque_url(mosque_url):
+    with open(MOSQUE_FILE, 'w') as f:
+        json.dump({'mosque_url': mosque_url}, f)
+
+# Function to load the mosque URL from the file
+def load_mosque_url():
+    if os.path.exists(MOSQUE_FILE):
+        with open(MOSQUE_FILE, 'r') as f:
+            return json.load(f).get('mosque_url')
+    return "https://mawaqit.net/en/m/noor-dublin"  # Default URL if no file is found
+    
 # Function to load selected athans from file
 def load_selected_athans():
     if os.path.exists(SELECTION_FILE):
@@ -403,6 +416,37 @@ def remove_athan():
             print(f"Error removing {athan_to_remove}: {str(e)}")
 
     return redirect(url_for('index'))  # Redirect back to the index view
+
+# Route to update mosque URL
+@app.route('/update-mosque', methods=['POST'])
+def update_mosque():
+    global LinkAPI
+    try:
+        data = request.get_json()
+        mosque_url = data.get('mosqueUrl')
+
+        if mosque_url:
+            # Extract the last part of the mosque URL
+            mosque_identifier = mosque_url.split('/')[-1]
+
+            # Update the LinkAPI with the new mosque identifier
+            LinkAPI = f"http://localhost:8000/api/v1/{mosque_identifier}/prayer-times"
+
+            # Save the mosque URL for persistence
+            save_mosque_url(mosque_url)
+
+            # Fetch the new prayer times
+            get_prayer_times()
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False}), 400
+    except Exception as e:
+        print(f"Error updating mosque: {e}")
+        return jsonify({'success': False}), 500
+
+# Load the mosque URL on startup
+LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
 
 # Start the background thread when the Flask app starts
 start_background_thread()
