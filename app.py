@@ -18,8 +18,8 @@ socketio = SocketIO(app)
 prayer_time_cache = None
 last_fetched = None
 
-# Mawaqit API Link for your local mosque
-LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
+# Load the mosque URL on startup
+LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
@@ -115,7 +115,7 @@ def get_prayer_times():
     now = datetime.now()
 
     # If last_fetched is None (first run) or it’s a new day, or if it’s exactly 2 AM, fetch new prayer times
-    if last_fetched is None or (now.date() != last_fetched.date()) or (now.hour == 2 and now.minute == 0):
+    if force_refresh or last_fetched is None or (now.date() != last_fetched.date()) or (now.hour == 2 and now.minute == 0):
         try:
             response = requests.get(LinkAPI)
             if response.status_code == 200:
@@ -417,7 +417,6 @@ def remove_athan():
 
     return redirect(url_for('index'))  # Redirect back to the index view
 
-# Route to update mosque URL
 @app.route('/update-mosque', methods=['POST'])
 def update_mosque():
     global LinkAPI
@@ -435,8 +434,8 @@ def update_mosque():
             # Save the mosque URL for persistence
             save_mosque_url(mosque_url)
 
-            # Fetch the new prayer times
-            get_prayer_times()
+            # Fetch the new prayer times and force refresh
+            get_prayer_times(force_refresh=True)
 
             return jsonify({'success': True})
         else:
@@ -444,9 +443,6 @@ def update_mosque():
     except Exception as e:
         print(f"Error updating mosque: {e}")
         return jsonify({'success': False}), 500
-
-# Load the mosque URL on startup
-LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
 
 # Start the background thread when the Flask app starts
 start_background_thread()
