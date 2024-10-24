@@ -38,6 +38,9 @@ pip install pygame
 pip install schedule
 pip install flask
 pip install yt-dlp
+pip install flask-socketio
+pip install psutil
+pip install evdev
 ```
 ### STEP 1:
 Clone mawaqit-api directory from github:
