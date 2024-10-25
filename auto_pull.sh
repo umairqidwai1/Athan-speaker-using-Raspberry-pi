@@ -1,5 +1,5 @@
 #!/bin/bash
-sleep 15
+sleep 30
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
 git fetch origin main
 LOCAL=$(git rev-parse HEAD)
