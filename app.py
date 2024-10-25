@@ -189,6 +189,11 @@ def main_loop():
             last_updated_date = current_date  # Set the last updated date
             print("Prayer times updated at 2:00 AM.")
 
+        # If prayer times failed to load, skip checking for prayer times
+        if not prayer_times:
+            time.sleep(60)  # Retry after a minute if no prayer times are available
+            continue
+
         # Extract individual prayer times (24-hour format)
         FAJR = prayer_times.get('fajr', '')
         DHUHR = prayer_times.get('dohr', '')
