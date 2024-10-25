@@ -1,5 +1,3 @@
 #!/bin/bash
-cd /home/pi/Desktop
-source env/bin/activate
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
-sudo env "PATH=$PATH" python app.py
+sudo /home/pi/Desktop/env/bin/python app.py >> /home/pi/Desktop/athan-app.log 2>&1 &
