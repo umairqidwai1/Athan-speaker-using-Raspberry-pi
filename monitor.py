@@ -7,7 +7,7 @@ import datetime
 # Function to check if app.py is running
 def is_app_running():
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-        if proc.info['cmdline'] and 'app.py' in proc.info['cmdline']:
+        if 'app.py' in proc.info['cmdline']:
             return True
     return False
 
