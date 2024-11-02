@@ -41,6 +41,7 @@ pip install yt-dlp
 pip install flask-socketio
 pip install psutil
 pip install evdev
+sudo apt install libSDL2_mixer-2.0.so.0
 sudo apt install libsdl2-mixer-2.0-0
 sudo apt install libsdl2-mixer-dev
 ```
