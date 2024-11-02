@@ -34,16 +34,15 @@ sudo apt-get update
 sudo apt install git
 sudo apt install pip
 sudo apt install ffmpeg
-pip install pygame
 pip install schedule
 pip install flask
 pip install yt-dlp
 pip install flask-socketio
 pip install psutil
 pip install evdev
-sudo apt install libSDL2_mixer-2.0.so.0
 sudo apt install libsdl2-mixer-2.0-0
 sudo apt install libsdl2-mixer-dev
+pip install pygame
 ```
 ### STEP 1:
 Clone mawaqit-api directory from github:
