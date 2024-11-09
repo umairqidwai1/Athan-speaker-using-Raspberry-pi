@@ -64,10 +64,14 @@ def save_selected_athans(fajr_athan, regular_athan):
         }, f)
 
 
-# Function to set ALSA mixer volume
 def set_volume(volume):
-    alsa_mixer = alsaaudio.Mixer('PCM')  # Use your specific mixer control, e.g., 'Master'
-    alsa_mixer.setvolume(volume)  # ALSA volume range is typically 0-100
+    alsa_mixer = alsaaudio.Mixer('PCM')
+
+    # Map the volume input (1-100) to ALSA's expected scale
+    # Adjust the multiplier and offset to better match perceived audio levels
+    scaled_volume = max(0, min(100, int((volume / 100) ** 1.5 * 100)))  # Exponential scaling for better control
+
+    alsa_mixer.setvolume(scaled_volume)
 
 # Function to load volume setting from file
 def load_volume_setting():
