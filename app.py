@@ -67,13 +67,7 @@ def save_selected_athans(fajr_athan, regular_athan):
 
 def set_volume(volume):
     alsa_mixer = alsaaudio.Mixer('PCM')
-    
-    # Apply a non-linear (logarithmic) scale
-    # Minimum threshold for non-zero sound level
-    min_vol = 8
-    # Adjust the range if needed
-    scaled_volume = min_vol + (92 * (math.log10(volume) / math.log10(100))) if volume > 1 else 0
-    alsa_mixer.setvolume(int(scaled_volume))
+    alsa_mixer.setvolume((volume*147)/100)
 
 # Function to load volume setting from file
 def load_volume_setting():
