@@ -63,7 +63,6 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
-mixer.music.set_volume(1.0)  # Set pygame volume to 100%
 
 # Function to set ALSA mixer volume
 def set_volume(volume):
@@ -92,6 +91,7 @@ def play_fajr_athan():
     try:
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
         mixer.init()
+        mixer.music.set_volume(1.0)
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
@@ -104,6 +104,7 @@ def play_regular_athan():
     try:
         file_path = os.path.join(ATHANS_DIR, selected_athan['regular'])
         mixer.init()
+        mixer.music.set_volume(1.0)
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
