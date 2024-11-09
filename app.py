@@ -10,6 +10,7 @@ import time
 import threading
 import yt_dlp
 import evdev
+import alsaaudio
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -62,9 +63,12 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
+mixer.music.set_volume(1.0)  # Set pygame volume to 100%
+
+# Function to set ALSA mixer volume
 def set_volume(volume):
-    mixer.init()
-    mixer.music.set_volume(volume / 100)
+    alsa_mixer = alsaaudio.Mixer('PCM')  # Use your specific mixer control, e.g., 'Master'
+    alsa_mixer.setvolume(volume)  # ALSA volume range is typically 0-100
 
 # Function to load volume setting from file
 def load_volume_setting():
@@ -78,6 +82,7 @@ def load_volume_setting():
 def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
+
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 current_volume = load_volume_setting()
@@ -86,6 +91,7 @@ set_volume(current_volume)
 def play_fajr_athan():
     try:
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
+        mixer.init()
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
@@ -97,6 +103,7 @@ def play_fajr_athan():
 def play_regular_athan():
     try:
         file_path = os.path.join(ATHANS_DIR, selected_athan['regular'])
+        mixer.init()
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
