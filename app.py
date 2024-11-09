@@ -11,6 +11,7 @@ import threading
 import yt_dlp
 import evdev
 import alsaaudio
+import math
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -66,12 +67,13 @@ def save_selected_athans(fajr_athan, regular_athan):
 
 def set_volume(volume):
     alsa_mixer = alsaaudio.Mixer('PCM')
-
-    # Map the volume input (1-100) to ALSA's expected scale
-    # Adjust the multiplier and offset to better match perceived audio levels
-    scaled_volume = max(0, min(100, int((volume / 100) ** 1.5 * 100)))  # Exponential scaling for better control
-
-    alsa_mixer.setvolume(scaled_volume)
+    
+    # Apply a non-linear (logarithmic) scale
+    # Minimum threshold for non-zero sound level
+    min_vol = 8
+    # Adjust the range if needed
+    scaled_volume = min_vol + (92 * (math.log10(volume) / math.log10(100))) if volume > 1 else 0
+    alsa_mixer.setvolume(int(scaled_volume))
 
 # Function to load volume setting from file
 def load_volume_setting():
