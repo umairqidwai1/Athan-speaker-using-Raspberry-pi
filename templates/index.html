@@ -396,8 +396,8 @@
                 <form id="mosqueForm">
                     <div class="form-group">
                         <label for="mosqueSelect">Select a Mosque</label>
-                        <select id="mosqueSelect" class="form-control">
-                            <option value="" selected>Select from the list or enter URL below</option>
+                        <select id="mosqueSelect" class="form-control selectpicker" data-live-search="true">
+                            <option value="" selected>Select from the list</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -456,8 +456,8 @@
             slider.value = data.volume;
             box.value = data.volume;
         });
-
-        // Fetch and populate mosques in the dropdown on modal load
+        
+        // Fetch and populate mosques in the dropdown
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/mosques')
                 .then(response => response.json())
@@ -469,9 +469,11 @@
                         option.text = name;
                         mosqueSelect.appendChild(option);
                     }
+                    // Refresh Bootstrap Select to display new options
+                    $('.selectpicker').selectpicker('refresh');
                 });
         });
-        
+
         // Set the URL field based on dropdown selection
         document.getElementById('mosqueSelect').addEventListener('change', function () {
             const mosqueUrl = document.getElementById('mosqueUrl');
@@ -654,6 +656,13 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    
+    <!-- Bootstrap Select JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
 </body>
 
 </html>
