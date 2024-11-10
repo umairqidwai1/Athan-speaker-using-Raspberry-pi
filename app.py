@@ -16,6 +16,11 @@ import subprocess
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+mosques = {
+    "Noor Islamic Culture Center": "https://mawaqit.net/en/noor-dublin",
+    "ABUBAKAR ASIDDIQ ISLAMIC CENTER": "https://mawaqit.net/en/m/abubakar-columbus"
+}
+
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 last_fetched = None
@@ -454,6 +459,11 @@ def update_mosque():
     except Exception as e:
         print(f"Error updating mosque: {e}")
         return jsonify({'success': False}), 500
+
+@app.route('/mosques')
+def get_mosques():
+    return jsonify(mosques)
+
 
 # Start the background thread when the Flask app starts
 start_background_thread()
