@@ -395,7 +395,13 @@
             <div class="modal-body">
                 <form id="mosqueForm">
                     <div class="form-group">
-                        <label for="mosqueUrl">Mosque URL</label>
+                        <label for="mosqueSelect">Select a Mosque</label>
+                        <select id="mosqueSelect" class="form-control">
+                            <option value="" selected>Select from the list or enter URL below</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mosqueUrl">Or Enter Mosque URL</label>
                         <input type="text" class="form-control" id="mosqueUrl" placeholder="https://mawaqit.net/en/m/mosque-name">
                     </div>
                 </form>
