@@ -65,9 +65,8 @@ def save_selected_athans(fajr_athan, regular_athan):
         }, f)
 
 def set_volume(volume):
-    alsa_mixer = alsaaudio.Mixer('PCM') 
-    alsa_volume = volume + '%'   
-    alsa_mixer.setvolume(alsa_volume)
+    volume = max(0, min(100, volume))
+    subprocess.run(["amixer", "-M", "set", "PCM", f"{volume}%"])
 
 # Function to load volume setting from file
 def load_volume_setting():
