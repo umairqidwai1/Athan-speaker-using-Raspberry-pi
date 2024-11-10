@@ -64,9 +64,13 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
+
 def set_volume(volume):
+    # Ensure the volume is within 0-100% range
     volume = max(0, min(100, volume))
-    subprocess.run(["amixer", "-M", "set", "PCM", f"{volume}%"])
+    
+    # Run the amixer command to set the volume as a percentage
+    subprocess.run(["amixer", "-M", "set", "PCM", f"{volume}%", "unmute"])
 
 # Function to load volume setting from file
 def load_volume_setting():
