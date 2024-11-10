@@ -64,11 +64,14 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
-
 def set_volume(volume):
-    alsa_mixer = alsaaudio.Mixer('PCM')    
-    alsa_volume = int(volume * 147 / 100)
-    alsa_mixer.setvolume(alsa_volume)
+    alsa_mixer = alsaaudio.Mixer('PCM')
+    
+    # Ensure the input volume is within 0-100% range
+    volume = max(0, min(100, volume))
+    
+    # Set the volume as a percentage directly
+    alsa_mixer.setvolume(volume, alsaaudio.MIXER_CHANNEL_ALL)
 
 # Function to load volume setting from file
 def load_volume_setting():
