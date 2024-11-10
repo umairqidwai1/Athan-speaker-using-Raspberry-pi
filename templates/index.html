@@ -457,7 +457,32 @@
             box.value = data.volume;
         });
 
-        // Choose mosque
+        // Fetch and populate mosques in the dropdown on modal load
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/mosques')
+                .then(response => response.json())
+                .then(data => {
+                    const mosqueSelect = document.getElementById('mosqueSelect');
+                    for (const [name, url] of Object.entries(data)) {
+                        let option = document.createElement('option');
+                        option.value = url;
+                        option.text = name;
+                        mosqueSelect.appendChild(option);
+                    }
+                });
+        });
+        
+        // Set the URL field based on dropdown selection
+        document.getElementById('mosqueSelect').addEventListener('change', function () {
+            const mosqueUrl = document.getElementById('mosqueUrl');
+            if (this.value) {
+                mosqueUrl.value = this.value;  // Set the URL field to selected mosque's URL
+            } else {
+                mosqueUrl.value = '';  // Clear URL field if no mosque selected
+            }
+        });
+        
+        // Save mosque URL on button click
         document.getElementById('saveMosqueUrl').addEventListener('click', function () {
             const mosqueUrl = document.getElementById('mosqueUrl').value;
             fetch('/update-mosque', {
@@ -471,8 +496,7 @@
             .then(data => {
                 if (data.success) {
                     alert('Mosque updated successfully!');
-                    // Reload the entire page to fetch and display updated prayer times
-                    location.reload();  
+                    location.reload();  // Reload to display updated prayer times
                 } else {
                     alert('Error updating mosque!');
                 }
