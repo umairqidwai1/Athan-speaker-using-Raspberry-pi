@@ -442,29 +442,32 @@
             <div class="modal-body">
                 <form id="iqamaSettingsForm" method="POST" action="{{ url_for('save_iqama_settings') }}">
 
-                    <!-- Prayer-Specific Iqama Settings -->
-                    {% for prayer in ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'] %}
+
+                    {% for prayer in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] %}
                     <div class="form-group mb-4">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h6>{{ prayer }} Iqama</h6>
-                            <!-- Toggle Switch -->
+                            <h6>{{ prayer.capitalize() }} Iqama</h6>
                             <div class="form-check form-switch">
-                                <input type="checkbox" name="{{ prayer.lower() }}_enabled" class="form-check-input iqama-toggle" data-prayer="{{ prayer.lower() }}" id="{{ prayer.lower() }}_toggle">
-                                <label class="form-check-label" for="{{ prayer.lower() }}_toggle"></label>
+                                <input type="checkbox" name="{{ prayer }}_enabled" class="form-check-input iqama-toggle"
+                                       id="{{ prayer }}_toggle" {% if iqama_settings.get(prayer, {}).get('enabled') %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ prayer }}_toggle"></label>
                             </div>
                         </div>
-
-                        <!-- Settings for Time After Athan or Specific Time -->
+                    
                         <div class="mt-2 ms-3">
                             <div class="form-check mb-2">
-                                <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="delay" data-prayer="{{ prayer.lower() }}" checked disabled>
+                                <input class="form-check-input option-radio" type="radio" name="{{ prayer }}_option" value="delay"
+                                       data-prayer="{{ prayer }}" {% if iqama_settings.get(prayer, {}).get('option') == 'delay' %}checked{% endif %}>
                                 <label class="form-check-label">Time After Athan (minutes)</label>
-                                <input type="number" name="{{ prayer.lower() }}_delay" class="form-control delay-input mt-1" min="0" placeholder="Enter minutes after athan" disabled>
+                                <input type="number" name="{{ prayer }}_delay" class="form-control delay-input mt-1" min="0"
+                                       value="{{ iqama_settings.get(prayer, {}).get('delay', '') }}" placeholder="Enter minutes after athan">
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="manual" data-prayer="{{ prayer.lower() }}" disabled>
+                                <input class="form-check-input option-radio" type="radio" name="{{ prayer }}_option" value="manual"
+                                       data-prayer="{{ prayer }}" {% if iqama_settings.get(prayer, {}).get('option') == 'manual' %}checked{% endif %}>
                                 <label class="form-check-label">Specific Time</label>
-                                <input type="time" name="{{ prayer.lower() }}_manual_time" class="form-control time-input mt-1" placeholder="Enter specific time" disabled>
+                                <input type="time" name="{{ prayer }}_manual_time" class="form-control time-input mt-1"
+                                       value="{{ iqama_settings.get(prayer, {}).get('manual_time', '') }}" placeholder="Enter specific time">
                             </div>
                         </div>
                     </div>
