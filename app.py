@@ -343,7 +343,7 @@ def index():
                 # Save selected athans from the form
                 selected_fajr_athan = request.form.get('fajr_audio')
                 selected_regular_athan = request.form.get('regular_audio')
-                selected_iqama = request.for.get('iqama_audio')
+                selected_iqama = request.form.get('iqama_audio')
 
                 # Update selected athans and save to file
                 selected_athan = {
