@@ -237,7 +237,7 @@ def main_loop():
         elif current_time == ISHA:
             play_regular_athan()
 
-        time.sleep(5)
+        time.sleep(60)
 
 # Start the main loop in a separate thread
 def start_background_thread():
