@@ -756,6 +756,54 @@
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
+
+        // Function to enable/disable settings based on checkbox status
+        function togglePrayerSettings(prayer) {
+            const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
+            const delayInput = document.querySelector(`input[name="${prayer}_delay"]`);
+            const timeInput = document.querySelector(`input[name="${prayer}_manual_time"]`);
+            const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
+            const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
+        
+            // Enable or disable based on checkbox status
+            const isEnabled = checkbox.checked;
+            delayInput.disabled = !isEnabled;
+            timeInput.disabled = !isEnabled;
+            delayRadio.disabled = !isEnabled;
+            manualRadio.disabled = !isEnabled;
+        
+            // Set the default option (delay) active when enabled
+            if (isEnabled) {
+                delayRadio.checked = true;
+                delayInput.disabled = false;
+                timeInput.disabled = true;
+            }
+        }
+        
+        // Event listener setup to toggle fields on checkbox change
+        document.addEventListener('DOMContentLoaded', function() {
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            prayers.forEach(prayer => {
+                const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
+                checkbox.addEventListener('change', () => togglePrayerSettings(prayer));
+                togglePrayerSettings(prayer); // Set initial state based on current checkbox status
+        
+                // Toggle delay and time inputs based on radio selection
+                const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
+                const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
+                
+                delayRadio.addEventListener('change', function() {
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = this.checked;
+                });
+                
+                manualRadio.addEventListener('change', function() {
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = this.checked;
+                });
+            });
+        });
+
         
         // test fajr athan button
         document.getElementById('testFajrBtn').addEventListener('click', function() {
