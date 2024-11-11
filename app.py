@@ -381,6 +381,7 @@ def index():
 
     # Get prayer times for display
     prayer_times = get_prayer_times()
+    iqama_settings = load_iqama_settings()
 
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
