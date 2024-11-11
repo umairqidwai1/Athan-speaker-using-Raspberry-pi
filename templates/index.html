@@ -440,7 +440,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="iqamaSettingsForm" method="POST" action="{{ url_for('save_iqama_settings') }}">
+                <form id="iqamaSettingsForm" method="POST" action="{{ url_for('save_iqama_settings_route') }}">
 
 
                     {% for prayer in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] %}
