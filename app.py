@@ -28,9 +28,11 @@ last_fetched = None
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
 FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
+IQAMA_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
 
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
+IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
 MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
@@ -68,6 +70,18 @@ def save_selected_athans(fajr_athan, regular_athan):
             'fajr': fajr_athan,
             'regular': regular_athan
         }, f)
+
+def load_selected_iqama():
+    if os.path.exists(IQAMA_FILE):
+        with open(IQAMA_FILE, 'r') as f:
+            return json.load(f)
+    else:
+        return {'iqama': 'default_iqama.wav'}
+
+# Function to save selected iqama to file
+def save_selected_iqama(iqama_file):
+    with open(IQAMA_FILE, 'w') as f:
+        json.dump({'iqama': iqama_file}, f)
 
 
 def set_volume(volume):
@@ -120,6 +134,20 @@ def play_regular_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
+
+def play_iqama():
+    try:
+        file_path = os.path.join(IQAMA_DIR, selected_iqama['iqama'])
+        mixer.init()
+        mixer.music.set_volume(1.0)
+        mixer.music.load(file_path)
+        set_volume(current_volume)
+        mixer.music.play()
+        while mixer.music.get_busy():
+            time.sleep(1)
+    except Exception as e:
+        print(f"Error playing iqama: {e}")
+
 
 def stop_athan():
     mixer.music.stop()
