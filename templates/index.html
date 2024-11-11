@@ -785,12 +785,22 @@
             timeInput.disabled = !isEnabled;
             delayRadio.disabled = !isEnabled;
             manualRadio.disabled = !isEnabled;
-        
-            // Set the default option (delay) active when enabled
-            if (isEnabled) {
+
+            
+            // Only set the default option if neither radio button is selected
+            if (isEnabled && !delayRadio.checked && !manualRadio.checked) {
                 delayRadio.checked = true;
                 delayInput.disabled = false;
                 timeInput.disabled = true;
+            } else if (isEnabled) {
+                // Apply the saved option state on load
+                if (delayRadio.checked) {
+                    delayInput.disabled = false;
+                    timeInput.disabled = true;
+                } else if (manualRadio.checked) {
+                    timeInput.disabled = false;
+                    delayInput.disabled = true;
+                }
             }
         }
         
