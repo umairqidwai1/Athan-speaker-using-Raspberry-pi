@@ -33,6 +33,7 @@ IQAMA_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
 IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
+SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
 MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
@@ -82,6 +83,18 @@ def load_selected_iqama():
 def save_selected_iqama(iqama_file):
     with open(IQAMA_FILE, 'w') as f:
         json.dump({'iqama': iqama_file}, f)
+
+# Function to load settings from a file
+def load_iqama_settings():
+    if os.path.exists(SETTINGS_FILE):
+        with open(SETTINGS_FILE, 'r') as file:
+            return json.load(file)
+    return {}
+
+# Function to save settings to a file
+def save_iqama_settings(settings):
+    with open(SETTINGS_FILE, 'w') as file:
+        json.dump(settings, file)
 
 
 def set_volume(volume):
@@ -355,6 +368,7 @@ def index():
                            selected_fajr_athan=selected_athan['fajr'],
                            selected_regular_athan=selected_athan['regular'],
                            selected_iqama=selected_iqama['iqama'],
+                           iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
                            volume=current_volume)
 
@@ -462,6 +476,23 @@ def upload_iqama():
         filename = file.filename
         file.save(os.path.join(IQAMA_DIR, filename))
         return redirect(url_for('index'))
+
+# Route to handle saving iqama settings
+@app.route('/save_iqama_settings', methods=['POST'])
+def save_iqama_settings_route():
+    iqama_settings = {}
+    prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
+    
+    for prayer in prayers:
+        iqama_settings[prayer] = {
+            'enabled': request.form.get(f'{prayer}_enabled') == 'on',
+            'option': request.form.get(f'{prayer}_option'),
+            'delay': request.form.get(f'{prayer}_delay'),
+            'manual_time': request.form.get(f'{prayer}_manual_time')
+        }
+    
+    save_iqama_settings(iqama_settings)
+    return jsonify(success=True)
 
 
 #Route to handle deleting Athan files
