@@ -514,7 +514,7 @@ def save_iqama_settings_route():
         }
     
     save_iqama_settings(iqama_settings)
-    return jsonify(success=True)
+    return redirect(url_for('index'))
 
 
 #Route to handle deleting Athan files
