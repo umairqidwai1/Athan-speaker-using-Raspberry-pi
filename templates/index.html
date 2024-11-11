@@ -447,7 +447,11 @@
                     <div class="form-group mb-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <h6>{{ prayer }} Iqama</h6>
-                            <input type="checkbox" name="{{ prayer.lower() }}_enabled" class="form-check-input iqama-toggle" data-prayer="{{ prayer.lower() }}">
+                            <!-- Toggle Switch -->
+                            <div class="form-check form-switch">
+                                <input type="checkbox" name="{{ prayer.lower() }}_enabled" class="form-check-input iqama-toggle" data-prayer="{{ prayer.lower() }}" id="{{ prayer.lower() }}_toggle">
+                                <label class="form-check-label" for="{{ prayer.lower() }}_toggle"></label>
+                            </div>
                         </div>
 
                         <!-- Settings for Time After Athan or Specific Time -->
