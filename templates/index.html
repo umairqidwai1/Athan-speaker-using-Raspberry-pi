@@ -431,15 +431,17 @@
                 <form id="iqamaSettingsForm" method="POST">
 
                     <!-- Iqama Audio Selection -->
-                    <div class="mb-3">
+                    <div class="form-row mb-3">
                         <label for="iqama_audio" class="form-label">Iqama Audio:</label>
-                        <select name="iqama_audio" class="form-select">
+                    </div>
+                    <div class="form-row d-flex align-items-center mb-4">
+                        <button type="button" class="btn btn-danger remove-btn me-2" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
+                        <select name="iqama_audio" class="form-select me-2">
                             {% for file in iqama_files %}
                             <option value="{{ file }}" {% if selected_iqama == file %}selected{% endif %}>{{ file }}</option>
                             {% endfor %}
                         </select>
-                        <button type="button" class="btn btn-secondary add-btn mt-2" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
-                        <button type="button" class="btn btn-danger remove-btn mt-2" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
+                        <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
                     </div>
 
                     <!-- Prayer-Specific Iqama Settings -->
@@ -467,6 +469,32 @@
                     {% endfor %}
 
                     <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Upload Iqama Audio Modal -->
+<div class="modal fade" id="uploadIqamaModal" tabindex="-1" aria-labelledby="uploadIqamaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadIqamaModalLabel">Upload Iqama Audio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="iqamaUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_iqama') }}">
+                    <div class="mb-3">
+                        <label for="iqama_file" class="form-label">Select Iqama Audio File</label>
+                        <input type="file" class="form-control" id="iqama_file" name="file" accept="audio/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="iqama_url" class="form-label">Or Enter YouTube URL</label>
+                        <input type="text" class="form-control" id="iqama_url" name="youtube_url" placeholder="https://youtube.com/your-url">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="downloadIqamaBtn">Upload Iqama</button>
                 </form>
             </div>
         </div>
@@ -659,6 +687,50 @@
         
             } else if (fileInput) {
                 // If file is selected, submit the form normally
+                form.submit();
+            } else {
+                alert('Please provide either a YouTube URL or an audio file.');
+            }
+        });
+
+        // Iqama Upload Button Click
+        document.getElementById('downloadIqamaBtn').addEventListener('click', function() {
+            const form = document.getElementById('iqamaUploadForm');
+            const youtubeUrl = form.querySelector('#iqama_url').value.trim();
+            const fileInput = form.querySelector('#iqama_file').files[0];
+    
+            if (youtubeUrl) {
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadIqamaModal'));
+                if (uploadModal) {
+                    uploadModal.hide();
+                }
+    
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
+                confirmModal.show();
+    
+                fetch('{{ url_for("download_iqama_from_youtube") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'youtube_url': youtubeUrl
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Error: Could not download Iqama audio.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+    
+                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
+                    window.location.href = "{{ url_for('index') }}";
+                });
+    
+            } else if (fileInput) {
                 form.submit();
             } else {
                 alert('Please provide either a YouTube URL or an audio file.');
