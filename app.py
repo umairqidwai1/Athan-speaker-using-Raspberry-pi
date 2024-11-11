@@ -48,8 +48,8 @@ def load_mosque_url():
     if os.path.exists(MOSQUE_FILE):
         with open(MOSQUE_FILE, 'r') as f:
             return json.load(f).get('mosque_url')
-    return "https://mawaqit.net/en/m/noor-dublin"  # Default URL if no file is found
-
+    return ""
+    
 # Load the mosque URL on startup
 LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
     
@@ -343,6 +343,7 @@ def index():
                 # Save selected athans from the form
                 selected_fajr_athan = request.form.get('fajr_audio')
                 selected_regular_athan = request.form.get('regular_audio')
+                selected_iqama = request.for.get('iqama_audio')
 
                 # Update selected athans and save to file
                 selected_athan = {
@@ -350,6 +351,9 @@ def index():
                     'regular': selected_regular_athan
                 }
                 save_selected_athans(selected_fajr_athan, selected_regular_athan)
+
+                selected_iqama = {'iqama' : selected_iqama }
+                save_selected_iqama(selected_iqama)
 
             elif 'test_fajr' in request.form:
                 # Play test Fajr athan
