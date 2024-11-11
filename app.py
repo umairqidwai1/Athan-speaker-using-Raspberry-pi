@@ -106,6 +106,7 @@ def save_volume_setting(volume):
 
 # Load initial selections and volume
 selected_athan = load_selected_athans()
+selected_iqama = load_selected_iqama() 
 current_volume = load_volume_setting()
 set_volume(current_volume)
 
