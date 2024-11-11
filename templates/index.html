@@ -308,6 +308,7 @@
         <h2>System Controls</h2>
         <button type="button" class="btn btn-secondary" id="testFajrBtn">Test Fajr Athan</button>
         <button type="button" class="btn btn-secondary" id="testRegularBtn">Test Regular Athan</button>
+        <button type="button" class="btn btn-secondary" id="testIqama">Test Iqama</button>
         <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
     </div>
@@ -866,6 +867,26 @@
                 console.error('Error:', error);
             });
         });
+
+        // test iqama button
+        document.getElementById('testIqama').addEventListener('click', function() {
+            fetch('/test_iqama', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Iqama played successfully');
+                } else {
+                    alert('Error playing Iqama');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
 
         // Initialize Bootstrap Select
         $(document).ready(function() {
