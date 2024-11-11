@@ -335,7 +335,7 @@ def handle_connect():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global selected_athan, current_volume
+    global selected_athan, current_volume, selected_iqama
 
     if request.method == 'POST':
         try:
