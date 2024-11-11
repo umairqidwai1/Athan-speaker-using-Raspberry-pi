@@ -24,6 +24,7 @@ mosques = {
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 last_fetched = None
+fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
@@ -210,6 +211,35 @@ def format_time(time_str):
         return dt.strftime('%I:%M %p')
     except ValueError:
         return time_str  # Return original if conversion fails
+
+# Function to update iqama times whenever the iqama settings form is submitted
+def update_iqama_times():
+    global fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama
+    iqama_settings = load_iqama_settings()  # Load current iqama settings
+
+    # Define a helper to calculate the iqama time for each prayer
+    def calculate_iqama_time(prayer_key, athan_time_str):
+        setting = iqama_settings.get(prayer_key, {})
+        if setting.get("enabled"):
+            if setting["option"] == "manual" and setting["manual_time"]:
+                # If manual time is set
+                return setting["manual_time"]
+            elif setting["option"] == "delay" and setting["delay"]:
+                # If delay option is set, add delay to the athan time
+                delay_minutes = int(setting["delay"])
+                athan_time = datetime.strptime(athan_time_str, "%H:%M")
+                iqama_time = athan_time + timedelta(minutes=delay_minutes)
+                return iqama_time.strftime("%H:%M")
+        return None  # If not enabled or invalid settings, return None
+
+    # Calculate each iqama time
+    fajr_iqama = calculate_iqama_time("fajr", prayer_times_cache["fajr"])
+    dhuhr_iqama = calculate_iqama_time("dhuhr", prayer_times_cache["dohr"])
+    asr_iqama = calculate_iqama_time("asr", prayer_times_cache["asr"])
+    maghrib_iqama = calculate_iqama_time("maghreb", prayer_times_cache["maghreb"])
+    isha_iqama = calculate_iqama_time("icha", prayer_times_cache["icha"])
+
+    print("Iqama times updated:", fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama)
 
 def handle_volume_buttons():
     global current_volume
@@ -527,6 +557,7 @@ def save_iqama_settings_route():
         }
     
     save_iqama_settings(iqama_settings)
+    update_iqama_times()
     return redirect(url_for('index'))
 
 
