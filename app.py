@@ -312,24 +312,25 @@ def main_loop():
         time.sleep(60)
 
 def iqama_loop():
-    prayer_times = get_prayer_times()
-    iqama_settings = load_iqama_settings()
-    
     while True:
+        # Get the current time in HH:MM format
         current_time = datetime.now().strftime('%H:%M')
-
-        for prayer, time_str in prayer_times.items():
-            if prayer in iqama_settings and iqama_settings[prayer]['enabled']:
-                if iqama_settings[prayer]['option'] == 'delay':
-                    delay_minutes = int(iqama_settings[prayer]['delay'] or 0)
-                    prayer_time = datetime.strptime(time_str, '%H:%M') + timedelta(minutes=delay_minutes)
-                elif iqama_settings[prayer]['option'] == 'manual':
-                    prayer_time = datetime.strptime(iqama_settings[prayer]['manual_time'], '%H:%M')
-
-                if current_time == prayer_time.strftime('%H:%M'):
-                    play_iqama()
         
+        # Check if each iqama time matches the current time
+        if fajr_iqama and current_time == fajr_iqama:
+            play_iqama()
+        elif dhuhr_iqama and current_time == dhuhr_iqama:
+            play_iqama()
+        elif asr_iqama and current_time == asr_iqama:
+            play_iqama()
+        elif maghrib_iqama and current_time == maghrib_iqama:
+            play_iqama()
+        elif isha_iqama and current_time == isha_iqama:
+            play_iqama()
+
+        # Sleep for 60 seconds to avoid repeated checks within the same minute
         time.sleep(1)
+
 
 # Start the main loop in a separate thread
 def start_background_thread():
