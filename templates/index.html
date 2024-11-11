@@ -431,15 +431,15 @@
                 <form id="iqamaSettingsForm" method="POST">
 
                     <!-- Iqama Audio Selection -->
-                    <div class="form-row mb-3">
+                    <div class="mb-3">
                         <label for="iqama_audio" class="form-label">Iqama Audio:</label>
-                        <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
                         <select name="iqama_audio" class="form-select">
                             {% for file in iqama_files %}
                             <option value="{{ file }}" {% if selected_iqama == file %}selected{% endif %}>{{ file }}</option>
                             {% endfor %}
                         </select>
-                        <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
+                        <button type="button" class="btn btn-secondary add-btn mt-2" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
+                        <button type="button" class="btn btn-danger remove-btn mt-2" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
                     </div>
 
                     <!-- Prayer-Specific Iqama Settings -->
@@ -447,32 +447,21 @@
                     <div class="form-group mb-4">
                         <div class="d-flex align-items-center justify-content-between">
                             <h6>{{ prayer }} Iqama</h6>
-                            <label class="form-switch">
-                                <input type="checkbox" name="{{ prayer.lower() }}_enabled" class="iqama-toggle" data-prayer="{{ prayer.lower() }}">
-                                <span class="form-check-label">Enable</span>
-                            </label>
+                            <input type="checkbox" name="{{ prayer.lower() }}_enabled" class="form-check-input iqama-toggle" data-prayer="{{ prayer.lower() }}">
                         </div>
 
-                        <!-- Delay After Athan and Specific Time Options -->
-                        <div class="row mt-2 ms-3">
-                            <div class="col-md-6">
-                                <label>Time After Athan (minutes)</label>
-                                <input type="number" name="{{ prayer.lower() }}_delay" class="form-control delay-input" min="0" placeholder="Enter minutes after athan" disabled>
+                        <!-- Settings for Time After Athan or Specific Time -->
+                        <div class="mt-2 ms-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="delay" data-prayer="{{ prayer.lower() }}" checked disabled>
+                                <label class="form-check-label">Time After Athan (minutes)</label>
+                                <input type="number" name="{{ prayer.lower() }}_delay" class="form-control delay-input mt-1" min="0" placeholder="Enter minutes after athan" disabled>
                             </div>
-                            <div class="col-md-6">
-                                <label>Specific Time</label>
-                                <input type="time" name="{{ prayer.lower() }}_manual_time" class="form-control time-input" placeholder="Enter specific time" disabled>
+                            <div class="form-check">
+                                <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="manual" data-prayer="{{ prayer.lower() }}" disabled>
+                                <label class="form-check-label">Specific Time</label>
+                                <input type="time" name="{{ prayer.lower() }}_manual_time" class="form-control time-input mt-1" placeholder="Enter specific time" disabled>
                             </div>
-                        </div>
-
-                        <!-- Option Selector -->
-                        <div class="form-check mt-2">
-                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="delay" data-prayer="{{ prayer.lower() }}" checked disabled>
-                            <label class="form-check-label">Use Delay</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="manual" data-prayer="{{ prayer.lower() }}" disabled>
-                            <label class="form-check-label">Use Specific Time</label>
                         </div>
                     </div>
                     {% endfor %}
@@ -483,6 +472,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- JavaScript -->
