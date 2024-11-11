@@ -337,10 +337,12 @@ def index():
     try:
         fajr_athan_files = os.listdir(FAJR_ATHANS_DIR)
         regular_athan_files = os.listdir(ATHANS_DIR)
+        iqama_files = os.listdir(IQAMA_DIR)
     except Exception as e:
         print(f"Error reading athan directories: {e}")
         fajr_athan_files = []
         regular_athan_files = []
+        iqama_files = []
 
     # Get prayer times for display
     prayer_times = get_prayer_times()
@@ -348,8 +350,10 @@ def index():
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
                            regular_athan_files=regular_athan_files,
+                           iqama_files=iqama_files,
                            selected_fajr_athan=selected_athan['fajr'],
                            selected_regular_athan=selected_athan['regular'],
+                           selected_iqama=selected_iqama['iqama'],
                            prayer_times=prayer_times,
                            volume=current_volume)
 
@@ -434,6 +438,31 @@ def download_regular_from_youtube():
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
 
+# Route to handle Iqama YouTube download
+@app.route('/download_iqama_from_youtube', methods=['POST'])
+def download_iqama_from_youtube():
+    youtube_url = request.form.get('youtube_url')
+    if youtube_url:
+        download_athan_from_youtube(youtube_url, IQAMA_DIR)
+        return redirect(url_for('index'))  # Redirect to homepage or success page
+    return "Error: No YouTube URL provided", 400
+
+# Route to upload Iqama file directly
+@app.route('/upload_iqama', methods=['POST'])
+def upload_iqama():
+    if 'file' not in request.files:
+        return redirect(url_for('index'))
+
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(url_for('index'))
+
+    if file:
+        filename = file.filename
+        file.save(os.path.join(IQAMA_DIR, filename))
+        return redirect(url_for('index'))
+
+
 #Route to handle deleting Athan files
 @app.route('/remove_athan', methods=['POST'])
 def remove_athan():
@@ -447,6 +476,8 @@ def remove_athan():
                 file_path = os.path.join(FAJR_ATHANS_DIR, athan_to_remove)
             elif audio_type == 'regular':
                 file_path = os.path.join(ATHANS_DIR, athan_to_remove)
+            elif audio_type == 'iqama':
+                file_path = os.path.join(IQAMA_DIR, athan_to_remove)
             else:
                 raise ValueError("Invalid audio type specified.")
 
