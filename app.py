@@ -217,6 +217,8 @@ def update_iqama_times():
     global fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama
     iqama_settings = load_iqama_settings()  # Load current iqama settings
 
+    print("Cached prayer times:", prayer_times_cache)
+
     # Define a helper to calculate the iqama time for each prayer
     def calculate_iqama_time(prayer_key, athan_time_str):
         setting = iqama_settings.get(prayer_key, {})
