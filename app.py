@@ -241,8 +241,8 @@ def update_iqama_times():
     fajr_iqama = calculate_iqama_time("fajr", prayer_times_cache["fajr"])
     dhuhr_iqama = calculate_iqama_time("dhuhr", prayer_times_cache["dohr"])
     asr_iqama = calculate_iqama_time("asr", prayer_times_cache["asr"])
-    maghrib_iqama = calculate_iqama_time("maghreb", prayer_times_cache["maghreb"])
-    isha_iqama = calculate_iqama_time("icha", prayer_times_cache["icha"])
+    maghrib_iqama = calculate_iqama_time("maghrib", prayer_times_cache["maghreb"])
+    isha_iqama = calculate_iqama_time("isha", prayer_times_cache["icha"])
 
     print("Iqama times updated:", fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama)
 
