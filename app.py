@@ -427,7 +427,7 @@ def index():
                            iqama_files=iqama_files,
                            selected_fajr_athan=selected_athan['fajr'],
                            selected_regular_athan=selected_athan['regular'],
-                           selected_iqama=selected_iqama['iqama'],
+                           selected_iqama=selected_iqama,
                            iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
                            volume=current_volume)
