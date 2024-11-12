@@ -18,11 +18,6 @@ from mosques_data import mosques
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-mosques = {
-    "Noor Islamic Culture Center": "https://mawaqit.net/en/noor-dublin",
-    "ABUBAKAR ASIDDIQ ISLAMIC CENTER": "https://mawaqit.net/en/m/abubakar-columbus"
-}
-
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 last_fetched = None
