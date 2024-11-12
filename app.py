@@ -78,12 +78,12 @@ def load_selected_iqama():
         with open(IQAMA_FILE, 'r') as f:
             return json.load(f)
     else:
-        return {'iqama': 'default_iqama.wav'}
+        return 'default_iqama.wav'
 
 # Function to save selected iqama to file
 def save_selected_iqama(iqama_file):
     with open(IQAMA_FILE, 'w') as f:
-        json.dump({'iqama': iqama_file}, f)
+        json.dump(iqama_file, f)
 
 # Function to load settings from a file
 def load_iqama_settings():
@@ -152,7 +152,7 @@ def play_regular_athan():
 
 def play_iqama():
     try:
-        file_path = os.path.join(IQAMA_DIR, selected_iqama['iqama'])
+        file_path = os.path.join(IQAMA_DIR, selected_iqama)
         mixer.init()
         mixer.music.set_volume(1.0)
         mixer.music.load(file_path)
@@ -387,8 +387,6 @@ def index():
                     'regular': selected_regular_athan
                 }
                 save_selected_athans(selected_fajr_athan, selected_regular_athan)
-
-                selected_iqama = load_selected_iqama()
                 save_selected_iqama(selected_iqama)
 
             elif 'test_fajr' in request.form:
