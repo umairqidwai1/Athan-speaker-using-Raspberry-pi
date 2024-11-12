@@ -415,7 +415,7 @@
                     <div class="form-group">
                         <label for="mosqueSelect">Select a Mosque</label>
                         <select id="mosqueSelect" class="form-control selectpicker" data-live-search="true">
-                            <option value="" selected>Select from the list</option>
+                            <option value="" disabled selected hidden>Select from the list</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -577,6 +577,7 @@
                 .then(response => response.json())
                 .then(data => {
                     const mosqueSelect = document.getElementById('mosqueSelect');
+                    mosqueSelect.innerHTML = mosqueSelect.querySelector('option[hidden]').outerHTML;
                     for (const [name, url] of Object.entries(data)) {
                         let option = document.createElement('option');
                         option.value = url;
