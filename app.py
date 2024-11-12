@@ -388,7 +388,7 @@ def index():
                 }
                 save_selected_athans(selected_fajr_athan, selected_regular_athan)
 
-                selected_iqama = {'iqama' : selected_iqama }
+                selected_iqama = load_selected_iqama()
                 save_selected_iqama(selected_iqama)
 
             elif 'test_fajr' in request.form:
