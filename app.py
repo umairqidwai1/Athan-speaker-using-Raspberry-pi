@@ -12,6 +12,7 @@ import yt_dlp
 import evdev
 import alsaaudio
 import subprocess
+from pydub import AudioSegment
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -118,6 +119,12 @@ def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
 
+# Get audio length in seconds
+def get_audio_duration(file_path):
+    audio = AudioSegment.from_file(file_path)
+    return len(audio) / 1000  # Duration in seconds
+
+
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 selected_iqama = load_selected_iqama() 
@@ -153,13 +160,26 @@ def play_regular_athan():
 def play_iqama():
     try:
         file_path = os.path.join(IQAMA_DIR, selected_iqama)
+        
+        # Get the duration of the audio file in seconds
+        audio_duration = get_audio_duration(file_path)
+
+        # Set up and play the audio
         mixer.init()
         mixer.music.set_volume(1.0)
         mixer.music.load(file_path)
         set_volume(current_volume)
         mixer.music.play()
+        
+        # Wait for the file to finish playing
         while mixer.music.get_busy():
             time.sleep(1)
+
+        # If audio is shorter than 60 seconds, add a delay
+        if audio_duration < 60:
+            additional_delay = 60 - audio_duration
+            time.sleep(additional_delay)
+
     except Exception as e:
         print(f"Error playing iqama: {e}")
 
