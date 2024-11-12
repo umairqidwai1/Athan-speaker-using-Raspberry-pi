@@ -447,7 +447,8 @@ def index():
                            selected_iqama=selected_iqama,
                            iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
-                           volume=current_volume)
+                           volume=current_volume,
+                           saved_mosque_url=saved_mosque_url)
 
 @app.route('/upload_fajr_athan', methods=['POST'])
 def upload_fajr_athan():
