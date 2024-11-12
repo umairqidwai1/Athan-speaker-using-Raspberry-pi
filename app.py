@@ -74,6 +74,7 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
+# Function to load selected iqama from file
 def load_selected_iqama():
     if os.path.exists(IQAMA_FILE):
         with open(IQAMA_FILE, 'r') as f:
@@ -86,26 +87,26 @@ def save_selected_iqama(iqama_file):
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
 
-# Function to load settings from a file
+# Function to load iqama settings from a file
 def load_iqama_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, 'r') as file:
             return json.load(file)
     return {}
 
-# Function to save settings to a file
+# Function to save iqama settings to a file
 def save_iqama_settings(settings):
     with open(SETTINGS_FILE, 'w') as file:
         json.dump(settings, file)
 
+# Set alsamixer to 100%
+subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 
+# Function to set volume
 def set_volume(volume):
-    # Ensure the volume is within 0-100% range
-    volume = max(0, min(100, volume))
+    mixer.init()
+    mixer.music.set_volume(volume / 100)
     
-    # Run the amixer command to set the volume as a percentage
-    subprocess.run(["amixer", "-M", "set", "PCM", f"{volume}%", "unmute"])
-
 # Function to load volume setting from file
 def load_volume_setting():
     if os.path.exists(VOLUME_FILE):
