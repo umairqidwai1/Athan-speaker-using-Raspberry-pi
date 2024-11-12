@@ -219,20 +219,23 @@ def update_iqama_times():
 
     print("Cached prayer times:", prayer_times_cache)
 
-    # Define a helper to calculate the iqama time for each prayer
     def calculate_iqama_time(prayer_key, athan_time_str):
         setting = iqama_settings.get(prayer_key, {})
+        print(f"Calculating iqama time for {prayer_key}: setting={setting}, athan_time_str={athan_time_str}")
+        
         if setting.get("enabled"):
             if setting["option"] == "manual" and setting["manual_time"]:
-                # If manual time is set
+                print(f"Manual time for {prayer_key}: {setting['manual_time']}")
                 return setting["manual_time"]
             elif setting["option"] == "delay" and setting["delay"]:
-                # If delay option is set, add delay to the athan time
                 delay_minutes = int(setting["delay"])
                 athan_time = datetime.strptime(athan_time_str, "%H:%M")
                 iqama_time = athan_time + timedelta(minutes=delay_minutes)
-                return iqama_time.strftime("%H:%M")
-        return None  # If not enabled or invalid settings, return None
+                iqama_str = iqama_time.strftime("%H:%M")
+                print(f"Delay time for {prayer_key}: {iqama_str}")
+                return iqama_str
+        print(f"{prayer_key} is not enabled or settings are invalid")
+        return None
 
     # Calculate each iqama time
     fajr_iqama = calculate_iqama_time("fajr", prayer_times_cache["fajr"])
