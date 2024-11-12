@@ -335,7 +335,7 @@ def main_loop():
         elif current_time == ISHA:
             play_regular_athan()
 
-        time.sleep(60)
+        time.sleep(1)
 
 def iqama_loop():
     while True:
