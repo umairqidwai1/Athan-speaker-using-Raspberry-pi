@@ -13,6 +13,7 @@ import evdev
 import alsaaudio
 import subprocess
 from pydub import AudioSegment
+from mosques_data import mosques
 
 app = Flask(__name__)
 socketio = SocketIO(app)
