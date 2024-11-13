@@ -38,12 +38,6 @@ VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.
 MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
 
-# Load initial selections and volume
-selected_athan = load_selected_athans()
-selected_iqama = load_selected_iqama() 
-current_volume = load_volume_setting()
-set_volume(current_volume)
-
 
 # Function to save mosque URL to a file
 def save_mosque_url(mosque_url):
@@ -143,7 +137,13 @@ def get_audio_duration(file_path):
     except (OSError, CouldntDecodeError):
         print("Error: The provided file is not a valid audio file.")
         return None  # Return None to indicate an invalid file
-        
+
+# Load initial selections and volume
+selected_athan = load_selected_athans()
+selected_iqama = load_selected_iqama() 
+current_volume = load_volume_setting()
+set_volume(current_volume)
+
 def play_fajr_athan():
     try:
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
