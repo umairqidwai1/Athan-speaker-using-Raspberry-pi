@@ -13,6 +13,7 @@ import evdev
 import alsaaudio
 import subprocess
 from pydub import AudioSegment
+from pydub.exceptions import CouldntDecodeError
 from mosques_data import mosques
 
 app = Flask(__name__)
@@ -21,6 +22,7 @@ socketio = SocketIO(app)
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 last_fetched = None
+iqama_duration = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
 # Define directories for athan files
@@ -35,6 +37,13 @@ SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_setting
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
 MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
+
+# Load initial selections and volume
+selected_athan = load_selected_athans()
+selected_iqama = load_selected_iqama() 
+current_volume = load_volume_setting()
+set_volume(current_volume)
+
 
 # Function to save mosque URL to a file
 def save_mosque_url(mosque_url):
@@ -72,16 +81,24 @@ def save_selected_athans(fajr_athan, regular_athan):
 
 # Function to load selected iqama from file
 def load_selected_iqama():
+    global iqama_duration 
+    
     if os.path.exists(IQAMA_FILE):
         with open(IQAMA_FILE, 'r') as f:
             return json.load(f)
     else:
         return 'default_iqama.wav'
+        
 
 # Function to save selected iqama to file
 def save_selected_iqama(iqama_file):
+    global iqama_duration, selected_iqama
+    
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
+
+    file_path = os.path.join(IQAMA_DIR, iqama_file)
+    iqama_duration = get_audio_duration(file_path)
 
 # Function to load iqama settings from a file
 def load_iqama_settings():
@@ -120,15 +137,13 @@ def save_volume_setting(volume):
 
 # Get audio length in seconds
 def get_audio_duration(file_path):
-    audio = AudioSegment.from_file(file_path)
-    return len(audio) / 1000  # Duration in seconds
-
-# Load initial selections and volume
-selected_athan = load_selected_athans()
-selected_iqama = load_selected_iqama() 
-current_volume = load_volume_setting()
-set_volume(current_volume)
-
+    try:
+        audio = AudioSegment.from_file(file_path)
+        return len(audio) / 1000  # Duration in seconds
+    except (OSError, CouldntDecodeError):
+        print("Error: The provided file is not a valid audio file.")
+        return None  # Return None to indicate an invalid file
+        
 def play_fajr_athan():
     try:
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
@@ -154,24 +169,11 @@ def play_regular_athan():
 def play_iqama():
     try:
         file_path = os.path.join(IQAMA_DIR, selected_iqama)
-        
-        # Get the duration of the audio file in seconds
-        audio_duration = get_audio_duration(file_path)
-
-        # Set up and play the audio
         mixer.music.load(file_path)
         set_volume(current_volume)
-        mixer.music.play()
-        
-        # Wait for the file to finish playing
+        mixer.music.play()        
         while mixer.music.get_busy():
             time.sleep(1)
-
-        # If audio is shorter than 60 seconds, add a delay
-        if audio_duration < 60:
-            additional_delay = 60 - audio_duration
-            time.sleep(additional_delay)
-
     except Exception as e:
         print(f"Error playing iqama: {e}")
 
@@ -228,8 +230,6 @@ def format_time(time_str):
 def update_iqama_times():
     global fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama
     iqama_settings = load_iqama_settings()  # Load current iqama settings
-
-    print("Cached prayer times:", prayer_times_cache)
 
     def calculate_iqama_time(prayer_key, athan_time_str):
         setting = iqama_settings.get(prayer_key, {})
@@ -332,6 +332,9 @@ def iqama_loop():
     while True:
         # Get the current time in HH:MM format
         current_time = datetime.now().strftime('%H:%M')
+
+        # Get the duration of the audio file in seconds
+        audio_duration = get_audio_duration(file_path)
         
         # Check if each iqama time matches the current time
         if fajr_iqama and current_time == fajr_iqama:
@@ -347,6 +350,12 @@ def iqama_loop():
 
         # Sleep for 60 seconds to avoid repeated checks within the same minute
         time.sleep(1)
+
+        # If audio is shorter than 60 seconds, add a delay
+        if audio_duration < 60:
+            additional_delay = 60 - audio_duration
+            time.sleep(additional_delay)
+
 
 
 # Start the main loop in a separate thread
