@@ -110,13 +110,12 @@ def save_iqama_settings(settings):
 # Set alsamixer to 100%
 subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 
-# Initialize mixer once at the start
-mixer.init()
 
-# Function to set volume
 def set_volume(volume):
-    mixer.music.set_volume(volume / 100)
-    
+    if mixer.get_init():  # Only adjust volume if mixer is active
+        mixer.music.set_volume(volume / 100)
+
+
 # Function to load volume setting from file
 def load_volume_setting():
     if os.path.exists(VOLUME_FILE):
@@ -146,7 +145,10 @@ current_volume = load_volume_setting()
 set_volume(current_volume)
 
 def play_fajr_athan():
+    if mixer.music.get_busy():
+        return
     try:
+        mixer.init()
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -155,9 +157,14 @@ def play_fajr_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing Fajr athan: {e}")
+    finally:
+        mixer.quit()
 
 def play_regular_athan():
+    if mixer.music.get_busy():
+        return
     try:
+        mixer.init()
         file_path = os.path.join(ATHANS_DIR, selected_athan['regular'])
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -166,9 +173,14 @@ def play_regular_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
+    finally:
+        mixer.quit()
 
 def play_iqama():
+    if mixer.music.get_busy():
+        return
     try:
+        mixer.init()
         file_path = os.path.join(IQAMA_DIR, selected_iqama)
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -177,10 +189,13 @@ def play_iqama():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing iqama: {e}")
+    finally:
+        mixer.quit()
 
 
 def stop_athan():
     mixer.music.stop()
+    mixer.quit()
 
 def get_prayer_times(force_refresh=False):
     global prayer_times_cache, last_fetched
