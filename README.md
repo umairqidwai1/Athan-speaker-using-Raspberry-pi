@@ -34,10 +34,6 @@ sudo apt-get update
 sudo apt install git
 sudo apt install pip
 sudo apt install ffmpeg
-pip install pygame
-pip install schedule
-pip install flask
-pip install yt-dlp
 ```
 ### STEP 1:
 Clone mawaqit-api directory from github:
