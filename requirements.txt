@@ -1,0 +1,5 @@
+pygame
+schedule
+flask
+yt-dlp
+pydub
