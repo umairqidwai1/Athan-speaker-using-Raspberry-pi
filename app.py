@@ -77,20 +77,25 @@ def save_selected_athans(fajr_athan, regular_athan):
 def load_selected_iqama():    
     if os.path.exists(IQAMA_FILE):
         with open(IQAMA_FILE, 'r') as f:
-            return json.load(f)
+            iqama_file = json.load(f)
+            set_iqama_duration(iqama_file)
+            return iqama_file
     else:
         return 'default_iqama.wav'
         
-
 # Function to save selected iqama to file
-def save_selected_iqama(iqama_file):
-    global iqama_duration
-    
+def save_selected_iqama(iqama_file):    
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
+    
+    set_iqama_duration(iqama_file)
 
+# Function to set iqama duration
+def set_iqama_duration(iqama_file):
+    global iqama_duration
     file_path = os.path.join(IQAMA_DIR, iqama_file)
-    iqama_duration = get_audio_duration(file_path)
+    iqama_duration = get_audio_duration(file_path) or 60  # Default to 60s if error occurs
+
 
 # Function to load iqama settings from a file
 def load_iqama_settings():
