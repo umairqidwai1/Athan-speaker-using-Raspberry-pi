@@ -25,6 +25,9 @@ last_fetched = None
 iqama_duration = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
+# Load the mosque URL on startup
+LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
+
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
 FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
@@ -39,11 +42,6 @@ MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json
 device = evdev.InputDevice('/dev/input/event0')
 
 
-# Function to save mosque URL to a file
-def save_mosque_url(mosque_url):
-    with open(MOSQUE_FILE, 'w') as f:
-        json.dump({'mosque_url': mosque_url}, f)
-
 # Function to load the mosque URL from the file
 def load_mosque_url():
     if os.path.exists(MOSQUE_FILE):
@@ -51,8 +49,10 @@ def load_mosque_url():
             return json.load(f).get('mosque_url')
     return ""
     
-# Load the mosque URL on startup
-LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
+# Function to save mosque URL to a file
+def save_mosque_url(mosque_url):
+    with open(MOSQUE_FILE, 'w') as f:
+        json.dump({'mosque_url': mosque_url}, f)  
     
 # Function to load selected athans from file
 def load_selected_athans():
