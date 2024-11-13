@@ -88,8 +88,6 @@ def save_selected_iqama(iqama_file):
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
     
-    set_iqama_duration(iqama_file)
-
 # Function to set iqama duration
 def set_iqama_duration(iqama_file):
     global iqama_duration
