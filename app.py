@@ -1,20 +1,20 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
+from pydub.exceptions import CouldntDecodeError
 from flask_socketio import SocketIO, emit
-import os
-import json
-import requests
 from datetime import datetime, timedelta
+from mosques_data import mosques
+from pydub import AudioSegment
 from pygame import mixer
-import schedule
-import time
+import subprocess
 import threading
+import alsaaudio
+import schedule
+import requests
 import yt_dlp
 import evdev
-import alsaaudio
-import subprocess
-from pydub import AudioSegment
-from pydub.exceptions import CouldntDecodeError
-from mosques_data import mosques
+import json
+import time
+import os
 
 app = Flask(__name__)
 socketio = SocketIO(app)
