@@ -573,21 +573,45 @@
         
         // Fetch and populate mosques in the dropdown
         document.addEventListener('DOMContentLoaded', function () {
-            fetch('/mosques')
-                .then(response => response.json())
-                .then(data => {
-                    const mosqueSelect = document.getElementById('mosqueSelect');
-                    mosqueSelect.innerHTML = mosqueSelect.querySelector('option[hidden]').outerHTML;
-                    for (const [name, url] of Object.entries(data)) {
-                        let option = document.createElement('option');
-                        option.value = url;
-                        option.text = name;
-                        mosqueSelect.appendChild(option);
+        const savedMosqueUrl = "{{ saved_mosque_url }}";  // Inject saved URL from Flask
+        const mosqueSelect = document.getElementById('mosqueSelect');
+        const mosqueUrlInput = document.getElementById('mosqueUrl');
+    
+        // Fetch and populate mosques in the dropdown
+        fetch('/mosques')
+            .then(response => response.json())
+            .then(data => {
+                // Clear any existing options except the placeholder
+                mosqueSelect.innerHTML = mosqueSelect.querySelector('option[hidden]').outerHTML;
+    
+                // Populate the dropdown
+                for (const [name, url] of Object.entries(data)) {
+                    let option = document.createElement('option');
+                    option.value = url;
+                    option.text = name;
+                    
+                    // If the saved URL matches this option, select it
+                    if (url === savedMosqueUrl) {
+                        option.selected = true;
                     }
-                    // Refresh Bootstrap Select to display new options
-                    $('.selectpicker').selectpicker('refresh');
-                });
+                    mosqueSelect.appendChild(option);
+                }
+    
+                // Set the input field if the saved URL doesn't match a dropdown option
+                if (!mosqueSelect.value) {
+                    mosqueUrlInput.value = savedMosqueUrl || '';  // Use saved URL if no match
+                }
+    
+                // Refresh Bootstrap Select to display new options
+                $('.selectpicker').selectpicker('refresh');
+            });
+    
+        // Reset URL input when the dropdown selection changes
+        mosqueSelect.addEventListener('change', function () {
+            mosqueUrlInput.value = this.value || '';  // Set input to selected URL, or clear if empty
         });
+    });
+
 
         // Set the URL field based on dropdown selection
         document.getElementById('mosqueSelect').addEventListener('change', function () {
