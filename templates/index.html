@@ -307,6 +307,31 @@
             </div>
         </div>
 
+        <!-- Upload Iqama Audio Modal -->
+        <div class="modal fade" id="uploadIqamaModal" tabindex="-1" aria-labelledby="uploadIqamaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadIqamaModalLabel">Upload Iqama Audio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="iqamaUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_iqama') }}">
+                            <div class="mb-3">
+                                <label for="iqama_file" class="form-label">Select Iqama Audio File</label>
+                                <input type="file" class="form-control" id="iqama_file" name="file" accept="audio/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="iqama_url" class="form-label">Or Enter YouTube URL</label>
+                                <input type="text" class="form-control" id="iqama_url" name="youtube_url" placeholder="https://youtube.com/your-url">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="downloadIqamaBtn">Upload Iqama</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     <!-- System Controls Section -->
     <div class="system-controls">
@@ -486,33 +511,6 @@
                     {% endfor %}
 
                     <button type="submit" class="btn btn-primary">Save Settings</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<!-- Upload Iqama Audio Modal -->
-<div class="modal fade" id="uploadIqamaModal" tabindex="-1" aria-labelledby="uploadIqamaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="uploadIqamaModalLabel">Upload Iqama Audio</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="iqamaUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_iqama') }}">
-                    <div class="mb-3">
-                        <label for="iqama_file" class="form-label">Select Iqama Audio File</label>
-                        <input type="file" class="form-control" id="iqama_file" name="file" accept="audio/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="iqama_url" class="form-label">Or Enter YouTube URL</label>
-                        <input type="text" class="form-control" id="iqama_url" name="youtube_url" placeholder="https://youtube.com/your-url">
-                    </div>
-                    <button type="button" class="btn btn-primary" id="downloadIqamaBtn">Upload Iqama</button>
                 </form>
             </div>
         </div>
