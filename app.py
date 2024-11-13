@@ -74,9 +74,7 @@ def save_selected_athans(fajr_athan, regular_athan):
         }, f)
 
 # Function to load selected iqama from file
-def load_selected_iqama():
-    global iqama_duration 
-    
+def load_selected_iqama():    
     if os.path.exists(IQAMA_FILE):
         with open(IQAMA_FILE, 'r') as f:
             return json.load(f)
@@ -86,7 +84,7 @@ def load_selected_iqama():
 
 # Function to save selected iqama to file
 def save_selected_iqama(iqama_file):
-    global iqama_duration, selected_iqama
+    global iqama_duration
     
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
@@ -329,12 +327,11 @@ def main_loop():
         time.sleep(1)
 
 def iqama_loop():
+    global iqama_duration 
+    
     while True:
         # Get the current time in HH:MM format
         current_time = datetime.now().strftime('%H:%M')
-
-        # Get the duration of the audio file in seconds
-        audio_duration = get_audio_duration(file_path)
         
         # Check if each iqama time matches the current time
         if fajr_iqama and current_time == fajr_iqama:
@@ -352,8 +349,8 @@ def iqama_loop():
         time.sleep(1)
 
         # If audio is shorter than 60 seconds, add a delay
-        if audio_duration < 60:
-            additional_delay = 60 - audio_duration
+        if iqama_duration < 60:
+            additional_delay = 60 - iqama_duration
             time.sleep(additional_delay)
 
 
