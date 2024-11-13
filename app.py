@@ -261,7 +261,7 @@ def update_iqama_times():
 
 def handle_volume_buttons():
     global current_volume
-    print("Listening for button presses...")  # Debugging log
+    print("Listening for button presses...") 
     for event in device.read_loop():
         if event.type == evdev.ecodes.EV_KEY:
             key_event = evdev.categorize(event)
