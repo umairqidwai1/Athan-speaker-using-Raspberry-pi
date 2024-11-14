@@ -96,18 +96,6 @@ XDG_RUNTIME_DIR=/run/user/1000
 ```
 
 
-### STEP 4:
-Make 2 folder, one for Fajr athan audio files and one for Regular athan audio files:
-```
-cd /home/pi/Desktop
-mkdir Athans
-mkdir FajrAthans
-```
-Add all you Athan Audio Files to thier corresponding folders.
-
-Make SURE to create these folders since the path in the code points to them. Even if you only have one audio file to input in each, **STILL MAKE THE FOLDERS**.
-
-
 Everything should work now. You can change some setting using the local website. Go to  http://your_raspberry_pi_ip_adress:5000
 
 
