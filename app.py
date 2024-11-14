@@ -7,7 +7,6 @@ from pydub import AudioSegment
 from pygame import mixer
 import subprocess
 import threading
-import alsaaudio
 import schedule
 import requests
 import yt_dlp
