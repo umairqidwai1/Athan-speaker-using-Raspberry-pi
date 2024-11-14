@@ -34,6 +34,8 @@ sudo apt-get update -y
 sudo apt install -y git
 sudo apt install -y python3-pip
 sudo apt install -y ffmpeg
+sudo apt install -y libsdl2-mixer-2.0-0
+sudo apt install -y libsdl2-mixer-dev
 ```
 ### STEP 1:
 Clone mawaqit-api directory from github:
