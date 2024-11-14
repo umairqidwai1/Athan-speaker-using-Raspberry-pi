@@ -21,7 +21,7 @@ For Rasberry pi lite os, Don't forget to make a file called Desktop using the co
 
 The regular version of rasbian should already include the Desktop folder and these packages by default.
 
-### STEP 0:
+### STEP 1:
 Create and activate virual env:
 ```
 cd /home/pi/Desktop
@@ -37,7 +37,7 @@ sudo apt install -y ffmpeg
 sudo apt install -y libsdl2-mixer-2.0-0
 sudo apt install -y libsdl2-mixer-dev
 ```
-### STEP 1:
+### STEP 2:
 Clone mawaqit-api directory from github:
 
 ```
@@ -65,7 +65,7 @@ export USE_REDIS=true
 ```
 
 
-### STEP 2:
+### STEP 3:
 
 Clone this repository. Copy the link from the top and run the command: 
 ```
@@ -74,7 +74,7 @@ git clone https://github.com/umairqidwai1/Athan-speaker-using-Raspberry-pi.git
 ```
 
 
-### STEP 3:
+### STEP 4:
 Make the startAPI.sh file executable
 ```
 cd /home/pi/Desktop/Athan-speaker-using-Raspberry-pi
