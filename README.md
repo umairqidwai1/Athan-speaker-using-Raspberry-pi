@@ -16,7 +16,7 @@ Press CRT+SHIFT+X to open customization menu:
 
 Either SSH into your Raspberry pi using the terminal on you computer using the command `ssh pi@raspberrypi.local`, (assuming your username is pi and hostname is raspberrypi, or you can replace the 'raspberrypi.local' with you pi's ip adress) or connect your pi to a monitor mouse and keyboard and open the terminal app.
 
-###IMPORTANT:
+### IMPORTANT:
 For Rasberry pi lite os, Don't forget to make a file called Desktop using the command `mkdir Desktop`, since all the files have to be in that folder for the code to work.
 
 The regular version of rasbian should already include the Desktop folder and these packages by default.
