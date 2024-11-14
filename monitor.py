@@ -7,9 +7,11 @@ import datetime
 # Function to check if app.py is running
 def is_app_running():
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-        if 'app.py' in proc.info['cmdline']:
+        # Ensure cmdline is not None before checking for 'app.py'
+        if proc.info['cmdline'] and 'app.py' in proc.info['cmdline']:
             return True
     return False
+
 
 # Function to reboot the Raspberry Pi at 1am once a week
 def schedule_reboot():
