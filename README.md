@@ -97,26 +97,11 @@ XDG_RUNTIME_DIR=/run/user/1000
 * * * * * /bin/bash /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/auto_pull.sh
 ```
 
-
-Everything should work now. You can change some setting using the local website. Go to  http://your_raspberry_pi_ip_adress:5000
-
-
-### Adding Athan Audio files:
-
-You can only add .mp3 or .wav audio files. There are 3 ways to add Athan audio to your raspberry pi:
-
-1: Go to the webpage listed above and click on the add button, then select you audio file
-
-2: Manually add the files by downloading then on you raspberry pi and moving them to the Athans for FajrAthans Directories.
-
-3: If you already have the audio files on you computer, open terminal and navigate to the folder where the file is saved. Enter the command 
-```
-scp file_name pi@your_pi_hostname:/home/pi/Desktop/Athans
-```
-change the last part to FajrAthans if the file is a Fajr Athan.
-
-
-Reboot your raspberry pi:
+Reboot your Pi using the command: 
 ```
 sudo reboot
 ```
+
+When the Pi is up again, everything should work. You can change some setting using the local website. Go to  http://your_raspberry_pi_ip_adress:5000
+
+
