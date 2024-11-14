@@ -30,10 +30,10 @@ source env/bin/activate
 ```
 Update and Install packages:
 ```
-sudo apt-get update
-sudo apt install git
-sudo apt install pip
-sudo apt install ffmpeg
+sudo apt-get update -y
+sudo apt install -y git
+sudo apt install -y python3-pip
+sudo apt install -y ffmpeg
 ```
 ### STEP 1:
 Clone mawaqit-api directory from github:
