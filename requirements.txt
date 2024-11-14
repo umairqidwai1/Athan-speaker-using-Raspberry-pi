@@ -3,3 +3,4 @@ schedule
 flask
 yt-dlp
 pydub
+psutil
