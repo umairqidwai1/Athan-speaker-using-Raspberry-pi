@@ -24,8 +24,6 @@ last_fetched = None
 iqama_duration = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
-# Load the mosque URL on startup
-LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
@@ -105,6 +103,9 @@ def load_iqama_settings():
 def save_iqama_settings(settings):
     with open(SETTINGS_FILE, 'w') as file:
         json.dump(settings, file)
+
+# Load the mosque URL on startup
+LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
 
 # Set alsamixer to 100%
 subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
