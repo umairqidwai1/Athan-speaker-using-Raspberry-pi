@@ -1,6 +1,7 @@
-pygame
+flask_socketio
 schedule
-flask
-yt-dlp
-pydub
+pygame
 psutil
+yt-dlp
+flask
+pydub
