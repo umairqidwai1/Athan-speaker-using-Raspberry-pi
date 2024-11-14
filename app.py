@@ -58,8 +58,8 @@ def load_selected_athans():
             return json.load(f)
     else:
         return {
-            'fajr': 'default_fajr.wav',
-            'regular': 'default_regular.wav'
+            'fajr': 'Subhanallah Beautiful Azan Fajr Makkah.mp3',
+            'regular': 'The most beautiful Azan in the World.mp3'
         }
 
 # Function to save selected athans to file
@@ -78,7 +78,7 @@ def load_selected_iqama():
             set_iqama_duration(iqama_file)
             return iqama_file
     else:
-        return 'default_iqama.wav'
+        return 'Iqamat.mp3'
         
 # Function to save selected iqama to file
 def save_selected_iqama(iqama_file):    
@@ -95,14 +95,25 @@ def set_iqama_duration(iqama_file):
 # Function to load iqama settings from a file
 def load_iqama_settings():
     if os.path.exists(SETTINGS_FILE):
-        with open(SETTINGS_FILE, 'r') as file:
-            return json.load(file)
-    return {}
+        try:
+            with open(SETTINGS_FILE, 'r') as file:
+                return json.load(file)
+        except (json.JSONDecodeError, ValueError):
+            print("Invalid settings file detected. Using default settings.")
+    
+    # Default settings if file is missing or invalid
+    return {
+        "fajr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "dhuhr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "asr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "maghrib": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "isha": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""}
+    }
 
 # Function to save iqama settings to a file
 def save_iqama_settings(settings):
     with open(SETTINGS_FILE, 'w') as file:
-        json.dump(settings, file)
+        json.dump(settings, file, indent=4)
 
 # Load the mosque URL on startup
 LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
@@ -114,7 +125,6 @@ subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 def set_volume(volume):
     if mixer.get_init():  # Only adjust volume if mixer is active
         mixer.music.set_volume(volume / 100)
-
 
 # Function to load volume setting from file
 def load_volume_setting():
