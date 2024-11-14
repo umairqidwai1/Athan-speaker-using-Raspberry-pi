@@ -21,10 +21,12 @@ def schedule_reboot():
     if current_time.weekday() == 6 and current_time >= reboot_time:
         print("Rebooting the system...")
         subprocess.run(['sudo', 'reboot'])
-
+        
 # Monitor loop
 while True:
-    if not is_app_running():
+    if is_app_running():
+        print("app.py is running.")
+    else:
         print("app.py is not running! Restarting the system...")
         subprocess.run(['sudo', 'reboot'])
     
