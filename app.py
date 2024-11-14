@@ -329,6 +329,7 @@ def main_loop():
         ASR = prayer_times.get('asr', '')
         MAGHRIB = prayer_times.get('maghreb', '')
         ISHA = prayer_times.get('icha', '')
+        Test = "20:35"
 
         # Check if the current time matches any prayer time
         if current_time == FAJR:
@@ -340,6 +341,8 @@ def main_loop():
         elif current_time == MAGHRIB:
             play_regular_athan()
         elif current_time == ISHA:
+            play_regular_athan()
+        elif current_time == Test:
             play_regular_athan()
 
         time.sleep(1)
