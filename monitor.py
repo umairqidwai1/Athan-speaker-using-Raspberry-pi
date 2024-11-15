@@ -21,7 +21,12 @@ def schedule_reboot():
     if current_time.weekday() == 6 and current_time >= reboot_time:
         print("Rebooting the system...")
         subprocess.run(['sudo', 'reboot'])
-        
+
+
+# Initial delay
+time.sleep(240)  
+
+
 # Monitor loop
 while True:
     if is_app_running():
@@ -30,8 +35,7 @@ while True:
         print("app.py is not running! Restarting the system...")
         #subprocess.run(['sudo', 'reboot'])
     
-    # Check every second
-    time.sleep(1)
+    time.sleep(10)
 
     # Schedule weekly reboot
     schedule_reboot()
