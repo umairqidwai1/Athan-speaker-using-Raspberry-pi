@@ -24,7 +24,7 @@ def schedule_reboot():
 
 
 # Initial delay
-time.sleep(240)  
+time.sleep(300)  
 
 
 # Monitor loop
