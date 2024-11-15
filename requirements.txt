@@ -1,6 +1,5 @@
 flask_socketio
 schedule
-pygame
 psutil
 yt-dlp
 flask
