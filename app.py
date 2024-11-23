@@ -205,11 +205,17 @@ def play_iqama():
 
 def stop_athan():
     try:
-        mixer.music.stop()
-        mixer.quit()
+        # Check if mixer is initialized
+        if mixer.get_init():
+            # Check if music is playing before stopping
+            if mixer.music.get_busy():
+                mixer.music.stop()
+            mixer.quit()
+        else:
+            print("Mixer is not initialized. Nothing to stop.")
     except Exception as e:
         print(f"Error stopping athan: {e}")
-
+        
 
 def get_prayer_times(force_refresh=False):
     global prayer_times_cache, last_fetched
