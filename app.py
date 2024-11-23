@@ -204,12 +204,11 @@ def play_iqama():
 
 
 def stop_athan():
-    if mixer.get_init():
-        try:
-            mixer.music.stop()
-            mixer.quit()
-        except Exception as e:
-            print(f"Error stopping athan: {e}")
+    try:
+        mixer.music.stop()
+        mixer.quit()
+    except Exception as e:
+        print(f"Error stopping athan: {e}")
 
 
 def get_prayer_times(force_refresh=False):
