@@ -155,6 +155,8 @@ current_volume = load_volume_setting()
 set_volume(current_volume)
 
 def play_fajr_athan():
+    if mixer.get_init():
+        return
     try:
         mixer.init()
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
@@ -169,7 +171,7 @@ def play_fajr_athan():
         mixer.quit()
 
 def play_regular_athan():
-    if mixer.music.get_busy():
+    if mixer.get_init():
         return
     try:
         mixer.init()
@@ -185,7 +187,7 @@ def play_regular_athan():
         mixer.quit()
 
 def play_iqama():
-    if mixer.music.get_busy():
+    if mixer.get_init():
         return
     try:
         mixer.init()
@@ -202,8 +204,13 @@ def play_iqama():
 
 
 def stop_athan():
-    mixer.music.stop()
-    mixer.quit()
+    if mixer.get_init():
+        try:
+            mixer.music.stop()
+            mixer.quit()
+        except Exception as e:
+            print(f"Error stopping athan: {e}")
+
 
 def get_prayer_times(force_refresh=False):
     global prayer_times_cache, last_fetched
