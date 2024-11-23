@@ -155,8 +155,6 @@ current_volume = load_volume_setting()
 set_volume(current_volume)
 
 def play_fajr_athan():
-    if mixer.music.get_busy():
-        return
     try:
         mixer.init()
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
