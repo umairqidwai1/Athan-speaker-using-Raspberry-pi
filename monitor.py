@@ -33,7 +33,7 @@ while True:
         print("app.py is running.")
     else:
         print("app.py is not running! Restarting the system...")
-        #subprocess.run(['sudo', 'reboot'])
+        subprocess.run(['sudo', 'reboot'])
     
     time.sleep(10)
 
