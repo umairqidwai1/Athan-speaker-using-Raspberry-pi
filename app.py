@@ -116,7 +116,7 @@ def save_iqama_settings(settings):
         json.dump(settings, file, indent=4)
 
 # Load the mosque URL on startup
-LinkAPI = f"http://localhost:8000/api/v1/{load_mosque_url().split('/')[-1]}/prayer-times"
+LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 
 # Set alsamixer to 100%
 subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
@@ -349,7 +349,6 @@ def main_loop():
         ASR = prayer_times.get('asr', '')
         MAGHRIB = prayer_times.get('maghreb', '')
         ISHA = prayer_times.get('icha', '')
-        Test = "20:35"
 
         # Check if the current time matches any prayer time
         if current_time == FAJR:
@@ -361,8 +360,6 @@ def main_loop():
         elif current_time == MAGHRIB:
             play_regular_athan()
         elif current_time == ISHA:
-            play_regular_athan()
-        elif current_time == Test:
             play_regular_athan()
 
         time.sleep(1)
@@ -655,6 +652,7 @@ def remove_athan():
 
     return redirect(url_for('index'))  # Redirect back to the index view
 
+'''
 @app.route('/update-mosque', methods=['POST'])
 def update_mosque():
     global LinkAPI
@@ -681,6 +679,8 @@ def update_mosque():
     except Exception as e:
         print(f"Error updating mosque: {e}")
         return jsonify({'success': False}), 500
+
+'''
 
 @app.route('/mosques')
 def get_mosques():
