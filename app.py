@@ -476,7 +476,7 @@ def index():
     # Get prayer times for display
     prayer_times = get_prayer_times()
     iqama_settings = load_iqama_settings()
-    #saved_mosque_url = load_mosque_url()
+    # saved_mosque_url = load_mosque_url()
 
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
