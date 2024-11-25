@@ -39,18 +39,18 @@ MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json
 device = evdev.InputDevice('/dev/input/event0')
 
 
-# Function to load the mosque URL from the file
+'''# Function to load the mosque URL from the file
 def load_mosque_url():
     if os.path.exists(MOSQUE_FILE):
         with open(MOSQUE_FILE, 'r') as f:
             return json.load(f).get('mosque_url')
     return ""
-    
+
 # Function to save mosque URL to a file
 def save_mosque_url(mosque_url):
     with open(MOSQUE_FILE, 'w') as f:
         json.dump({'mosque_url': mosque_url}, f)  
-    
+'''
 # Function to load selected athans from file
 def load_selected_athans():
     if os.path.exists(SELECTION_FILE):
