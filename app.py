@@ -476,7 +476,7 @@ def index():
     # Get prayer times for display
     prayer_times = get_prayer_times()
     iqama_settings = load_iqama_settings()
-    saved_mosque_url = load_mosque_url()
+    #saved_mosque_url = load_mosque_url()
 
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
@@ -488,7 +488,7 @@ def index():
                            iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
                            volume=current_volume,
-                           saved_mosque_url=saved_mosque_url)
+                           #saved_mosque_url=saved_mosque_url)
 
 @app.route('/upload_fajr_athan', methods=['POST'])
 def upload_fajr_athan():
