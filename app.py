@@ -325,7 +325,7 @@ def iqama_loop():
             play_iqama()
         elif dhuhr_iqama and current_time == dhuhr_iqama:
             play_iqama()
-        elif asr_iqama and current_time == asr_iqama:
+        elif current_time == asr_iqama:
             play_iqama()
         elif maghrib_iqama and current_time == maghrib_iqama:
             play_iqama()
