@@ -11,7 +11,6 @@ import threading
 import yt_dlp
 import evdev
 
-
 app = Flask(__name__)
 socketio = SocketIO(app) 
 mixer.init()
