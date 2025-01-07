@@ -335,12 +335,6 @@ def iqama_loop():
         # Sleep for 1 second
         time.sleep(1)
 
-        # If audio is shorter than 60 seconds, add a delay
-        if iqama_duration < 60:
-            additional_delay = 60 - iqama_duration
-            time.sleep(additional_delay)
-
-
 
 # Start the main loop in a separate thread
 def start_background_thread():
