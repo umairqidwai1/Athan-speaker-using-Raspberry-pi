@@ -18,6 +18,7 @@ mixer.init()
 
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
+fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
 # Mawaqit API Link for your local mosque
 LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
@@ -26,10 +27,14 @@ LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
 FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
 TEMP_DIR =  '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Temp'
+IQAMA_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
+
 
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
+IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
+SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
 device = evdev.InputDevice('/dev/input/event0')
 
 # Function to load selected athans from file
@@ -51,6 +56,41 @@ def save_selected_athans(fajr_athan, regular_athan):
             'regular': regular_athan
         }, f)
 
+# Function to load selected iqama from file
+def load_selected_iqama():    
+    if os.path.exists(IQAMA_FILE):
+        with open(IQAMA_FILE, 'r') as f: 
+            return json.load(f)
+    else:
+        return 'Iqamat.mp3'
+        
+# Function to save selected iqama to file
+def save_selected_iqama(iqama_file):    
+    with open(IQAMA_FILE, 'w') as f:
+        json.dump(iqama_file, f)
+# Function to load iqama settings from a file
+def load_iqama_settings():
+    if os.path.exists(SETTINGS_FILE):
+        try:
+            with open(SETTINGS_FILE, 'r') as file:
+                return json.load(file)
+        except (json.JSONDecodeError, ValueError):
+            print("Invalid settings file detected. Using default settings.")
+    
+    # Default settings if file is missing or invalid
+    return {
+        "fajr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "dhuhr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "asr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "maghrib": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
+        "isha": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""}
+    }
+
+# Function to save iqama settings to a file
+def save_iqama_settings(settings):
+    with open(SETTINGS_FILE, 'w') as file:
+        json.dump(settings, file, indent=4)
+
 def set_volume(volume):
     mixer.music.set_volume(volume / 100)
 
@@ -70,6 +110,7 @@ def save_volume_setting(volume):
 
 # Load initial selections and volume
 selected_athan = load_selected_athans()
+selected_iqama = load_selected_iqama() 
 current_volume = load_volume_setting()
 set_volume(current_volume)
 
@@ -94,6 +135,17 @@ def play_regular_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
+
+def play_iqama():
+    try:
+        file_path = os.path.join(IQAMA_DIR, selected_iqama)
+        mixer.music.load(file_path)
+        set_volume(current_volume)
+        mixer.music.play()        
+        while mixer.music.get_busy():
+            time.sleep(1)
+    except Exception as e:
+        print(f"Error playing iqama: {e}")
 
 def stop_athan():
     mixer.music.stop()
@@ -140,6 +192,39 @@ def format_time(time_str):
         return dt.strftime('%I:%M %p')
     except ValueError:
         return time_str  # Return original if conversion fails
+
+# Function to update iqama times whenever the iqama settings form is submitted
+def update_iqama_times():
+    global fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama
+    iqama_settings = load_iqama_settings()  # Load current iqama settings
+
+    def calculate_iqama_time(prayer_key, athan_time_str):
+        setting = iqama_settings.get(prayer_key, {})
+        print(f"Calculating iqama time for {prayer_key}: setting={setting}, athan_time_str={athan_time_str}")
+        
+        if setting.get("enabled"):
+            if setting["option"] == "manual" and setting["manual_time"]:
+                print(f"Manual time for {prayer_key}: {setting['manual_time']}")
+                return setting["manual_time"]
+            elif setting["option"] == "delay" and setting["delay"]:
+                delay_minutes = int(setting["delay"])
+                athan_time = datetime.strptime(athan_time_str, "%H:%M")
+                iqama_time = athan_time + timedelta(minutes=delay_minutes)
+                iqama_str = iqama_time.strftime("%H:%M")
+                print(f"Delay time for {prayer_key}: {iqama_str}")
+                return iqama_str
+        print(f"{prayer_key} is not enabled or settings are invalid")
+        return None
+
+    # Calculate each iqama time
+    fajr_iqama = calculate_iqama_time("fajr", prayer_times_cache["fajr"])
+    dhuhr_iqama = calculate_iqama_time("dhuhr", prayer_times_cache["dohr"])
+    asr_iqama = calculate_iqama_time("asr", prayer_times_cache["asr"])
+    maghrib_iqama = calculate_iqama_time("maghrib", prayer_times_cache["maghreb"])
+    isha_iqama = calculate_iqama_time("isha", prayer_times_cache["icha"])
+
+    print("Iqama times updated:", fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama)
+
 
 def handle_volume_buttons():
     global current_volume
@@ -202,9 +287,32 @@ def main_loop():
         # Sleep for a second before checking again
         time.sleep(1)  
 
+def iqama_loop():
+    
+    while True:
+        # Get the current time in HH:MM format
+        current_time = datetime.now().strftime('%H:%M')
+        
+        # Check if each iqama time matches the current time
+        if current_time == fajr_iqama:
+            play_iqama()
+        elif current_time == dhuhr_iqama:
+            play_iqama()
+        elif current_time == asr_iqama:
+            play_iqama()
+        elif current_time == maghrib_iqama:
+            play_iqama()
+        elif current_time == isha_iqama:
+            play_iqama()
+
+        # Sleep for 60 seconds to avoid repeated checks within the same minute
+        time.sleep(1)
+
+            
 # Start the main loop in a separate thread
 def start_background_thread():
     threading.Thread(target=main_loop, daemon=True).start()
+    threading.Thread(target=iqama_loop, daemon=True).start()
     threading.Thread(target=handle_volume_buttons, daemon=True).start()
 
 
@@ -240,7 +348,7 @@ def download_athan_from_youtube(url, save_path):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global selected_athan, current_volume
+    global selected_athan, current_volume, selected_iqama
 
     if request.method == 'POST':
         try:
@@ -248,13 +356,15 @@ def index():
                 # Save selected athans from the form
                 selected_fajr_athan = request.form.get('fajr_audio')
                 selected_regular_athan = request.form.get('regular_audio')
-
+                selected_iqama = request.form.get('iqama_audio')
+                
                 # Update selected athans and save to file
                 selected_athan = {
                     'fajr': selected_fajr_athan,
                     'regular': selected_regular_athan
                 }
                 save_selected_athans(selected_fajr_athan, selected_regular_athan)
+                save_selected_iqama(selected_iqama)
 
             elif 'test_fajr' in request.form:
                 # Play test Fajr athan
@@ -277,19 +387,26 @@ def index():
     try:
         fajr_athan_files = os.listdir(FAJR_ATHANS_DIR)
         regular_athan_files = os.listdir(ATHANS_DIR)
+        iqama_files = os.listdir(IQAMA_DIR)
     except Exception as e:
         print(f"Error reading athan directories: {e}")
         fajr_athan_files = []
         regular_athan_files = []
+        iqama_files = []
 
     # Get prayer times for display
     prayer_times = get_prayer_times()
+    iqama_settings = load_iqama_settings()
+
 
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
                            regular_athan_files=regular_athan_files,
+                           iqama_files=iqama_files,
                            selected_fajr_athan=selected_athan['fajr'],
                            selected_regular_athan=selected_athan['regular'],
+                           selected_iqama=selected_iqama,
+                           iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
                            volume=current_volume)
 
@@ -356,6 +473,15 @@ def test_regular():
         print(f"Error testing regular athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play regular athan'})
 
+@app.route('/test_iqama', methods=['POST'])
+def test_iqama():
+    try:
+        play_iqama()
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        print(f"Error testing iqama: {e}")
+        return jsonify({'status': 'error', 'message': 'Failed to play iqama'})
+
 # Route to handle Fajr Athan YouTube download
 @app.route('/download_fajr_from_youtube', methods=['POST'])
 def download_fajr_from_youtube():
@@ -373,6 +499,48 @@ def download_regular_from_youtube():
         download_athan_from_youtube(youtube_url, ATHANS_DIR)
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
+
+# Route to handle Iqama YouTube download
+@app.route('/download_iqama_from_youtube', methods=['POST'])
+def download_iqama_from_youtube():
+    youtube_url = request.form.get('youtube_url')
+    if youtube_url:
+        download_athan_from_youtube(youtube_url, IQAMA_DIR)
+        return redirect(url_for('index'))  # Redirect to homepage or success page
+    return "Error: No YouTube URL provided", 400
+
+# Route to upload Iqama file directly
+@app.route('/upload_iqama', methods=['POST'])
+def upload_iqama():
+    if 'file' not in request.files:
+        return redirect(url_for('index'))
+
+    file = request.files['file']
+    if file.filename == '':
+        return redirect(url_for('index'))
+
+    if file:
+        filename = file.filename
+        file.save(os.path.join(IQAMA_DIR, filename))
+        return redirect(url_for('index'))
+
+# Route to handle saving iqama settings
+@app.route('/save_iqama_settings', methods=['POST'])
+def save_iqama_settings_route():
+    iqama_settings = {}
+    prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
+    
+    for prayer in prayers:
+        iqama_settings[prayer] = {
+            'enabled': request.form.get(f'{prayer}_enabled') == 'on',
+            'option': request.form.get(f'{prayer}_option'),
+            'delay': request.form.get(f'{prayer}_delay'),
+            'manual_time': request.form.get(f'{prayer}_manual_time')
+        }
+    
+    save_iqama_settings(iqama_settings)
+    update_iqama_times()
+    return redirect(url_for('index'))
 
 #Route to handle deleting Athan files
 @app.route('/remove_athan', methods=['POST'])
