@@ -31,10 +31,6 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Select CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
-    
     <style>
         body {
             background-color: #f8f9fa;
@@ -114,10 +110,6 @@
             border-radius: 8px;
         }
 
-        body, html {
-            overflow-x: hidden;
-        }
-
         .volume-control {
             display: flex;
             align-items: center;
@@ -191,9 +183,6 @@
                 <li class="list-group-item"><strong>Asr:</strong> {{ prayer_times['asr_12hr'] }}</li>
                 <li class="list-group-item"><strong>Maghrib:</strong> {{ prayer_times['maghreb_12hr'] }}</li>
                 <li class="list-group-item"><strong>Isha:</strong> {{ prayer_times['icha_12hr'] }}</li>
-                <!-- Button to open the modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mosqueModal" style="margin-top: 20px;">Choose Mosque</button>
-
             </ul>
         </div>
 
@@ -239,20 +228,7 @@
                     </select>
                     <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadRegularModal">Add</button>
                 </div>
-                <div class="form-row mb-3">
-                    <label for="iqama_audio" class="form-label">Iqama Audio:</label>
-                </div>
-                <div class="form-row">
-                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
-                    <select name="iqama_audio" class="form-select">
-                        {% for file in iqama_files %}
-                        <option value="{{ file }}" {% if selected_iqama == file %}selected{% endif %}>{{ file }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
-                </div>
-                
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#iqamaSettingsModal">Iqama Settings</button>
+        
                 <button type="submit" name="save_changes" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
@@ -307,38 +283,12 @@
             </div>
         </div>
 
-        <!-- Upload Iqama Audio Modal 
-        <div class="modal fade" id="uploadIqamaModal" tabindex="-1" aria-labelledby="uploadIqamaModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="uploadIqamaModalLabel">Upload Iqama Audio</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="iqamaUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_iqama') }}">
-                            <div class="mb-3">
-                                <label for="iqama_file" class="form-label">Select Iqama Audio File</label>
-                                <input type="file" class="form-control" id="iqama_file" name="file" accept="audio/*">
-                            </div>
-                            <div class="mb-3">
-                                <label for="iqama_url" class="form-label">Or Enter YouTube URL</label>
-                                <input type="text" class="form-control" id="iqama_url" name="youtube_url" placeholder="https://youtube.com/your-url">
-                            </div>
-                            <button type="button" class="btn btn-primary" id="downloadIqamaBtn">Upload Iqama</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
--->
 
     <!-- System Controls Section -->
     <div class="system-controls">
         <h2>System Controls</h2>
         <button type="button" class="btn btn-secondary" id="testFajrBtn">Test Fajr Athan</button>
         <button type="button" class="btn btn-secondary" id="testRegularBtn">Test Regular Athan</button>
-        <button type="button" class="btn btn-secondary" id="testIqama">Test Iqama</button>
         <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
     </div>
@@ -432,108 +382,9 @@
     </div>
 </div>
 
-<!-- Mosque Selection Modal -->
-<div class="modal fade" id="mosqueModal" tabindex="-1" role="dialog" aria-labelledby="mosqueModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="mosqueModalLabel">Enter Mosque URL</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="mosqueForm">
-                    <div class="form-group">
-                        <label for="mosqueSelect">Select a Mosque</label>
-                        <select id="mosqueSelect" class="form-control selectpicker" data-live-search="true">
-                            <option value="" disabled selected hidden>Select from the list</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mosqueUrl">Or Enter Mosque URL</label>
-                        <input type="text" class="form-control" id="mosqueUrl" placeholder="https://mawaqit.net/en/m/mosque-name">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveMosqueUrl">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Iqama Settings Modal -->
-<div class="modal fade" id="iqamaSettingsModal" tabindex="-1" aria-labelledby="iqamaSettingsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="iqamaSettingsModalLabel">Iqama Settings</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="iqamaSettingsForm" method="POST" action="{{ url_for('save_iqama_settings_route') }}">
-
-
-                    {% for prayer in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] %}
-                    <div class="form-group mb-4">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h6>{{ prayer.capitalize() }} Iqama</h6>
-                            <div class="form-check form-switch">
-                                <input type="checkbox" name="{{ prayer }}_enabled" class="form-check-input iqama-toggle"
-                                       id="{{ prayer }}_toggle" {% if iqama_settings.get(prayer, {}).get('enabled') %}checked{% endif %}>
-                                <label class="form-check-label" for="{{ prayer }}_toggle"></label>
-                            </div>
-                        </div>
-
-                    <div class="mt-2 ms-3">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="delay"
-                                   data-prayer="{{ prayer.lower() }}" 
-                                   {% if iqama_settings[prayer.lower()]['option'] == 'delay' %}checked{% endif %}>
-                            <label class="form-check-label">Time After Athan (minutes)</label>
-                            <input type="number" name="{{ prayer.lower() }}_delay" class="form-control delay-input mt-1" min="0"
-                                   placeholder="Enter minutes after athan" 
-                                   value="{{ iqama_settings[prayer.lower()]['delay'] or '' }}"
-                                   {% if iqama_settings[prayer.lower()]['option'] != 'delay' %}disabled{% endif %}>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="manual"
-                                   data-prayer="{{ prayer.lower() }}" 
-                                   {% if iqama_settings[prayer.lower()]['option'] == 'manual' %}checked{% endif %}>
-                            <label class="form-check-label">Specific Time</label>
-                            <input type="time" name="{{ prayer.lower() }}_manual_time" class="form-control time-input mt-1"
-                                   placeholder="Enter specific time"
-                                   value="{{ iqama_settings[prayer.lower()]['manual_time'] or '' }}"
-                                   {% if iqama_settings[prayer.lower()]['option'] != 'manual' %}disabled{% endif %}>
-                        </div>
-                    </div>
-
-                    {% endfor %}
-
-                    <button type="submit" class="btn btn-primary">Save Settings</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
 <!-- JavaScript -->
-
-    <!-- jQuery (load before any JavaScript that depends on it) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
-    <!-- Socket.io -->
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-    
-    <!-- Bootstrap JS (after jQuery) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Bootstrap Select JavaScript (load after Bootstrap JS) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
-
-        
     <script>
         
         // Sync slider and input box
@@ -573,81 +424,6 @@
             slider.value = data.volume;
             box.value = data.volume;
         });
-
-        /*
-        // Fetch and populate mosques in the dropdown
-        document.addEventListener('DOMContentLoaded', function () {
-        const savedMosqueUrl = "{{ saved_mosque_url }}";  // Inject saved URL from Flask
-        const mosqueSelect = document.getElementById('mosqueSelect');
-        const mosqueUrlInput = document.getElementById('mosqueUrl');
-    
-        // Fetch and populate mosques in the dropdown
-        fetch('/mosques')
-            .then(response => response.json())
-            .then(data => {
-                // Clear any existing options except the placeholder
-                mosqueSelect.innerHTML = mosqueSelect.querySelector('option[hidden]').outerHTML;
-    
-                // Populate the dropdown
-                for (const [name, url] of Object.entries(data)) {
-                    let option = document.createElement('option');
-                    option.value = url;
-                    option.text = name;
-                    
-                    // If the saved URL matches this option, select it
-                    if (url === savedMosqueUrl) {
-                        option.selected = true;
-                    }
-                    mosqueSelect.appendChild(option);
-                }
-    
-                // Set the input field if the saved URL doesn't match a dropdown option
-                if (!mosqueSelect.value) {
-                    mosqueUrlInput.value = savedMosqueUrl || '';  // Use saved URL if no match
-                }
-    
-                // Refresh Bootstrap Select to display new options
-                $('.selectpicker').selectpicker('refresh');
-            });
-    
-        // Reset URL input when the dropdown selection changes
-        mosqueSelect.addEventListener('change', function () {
-            mosqueUrlInput.value = this.value || '';  // Set input to selected URL, or clear if empty
-        });
-    });
-
-
-        // Set the URL field based on dropdown selection
-        document.getElementById('mosqueSelect').addEventListener('change', function () {
-            const mosqueUrl = document.getElementById('mosqueUrl');
-            if (this.value) {
-                mosqueUrl.value = this.value;  // Set the URL field to selected mosque's URL
-            } else {
-                mosqueUrl.value = '';  // Clear URL field if no mosque selected
-            }
-        });
-        
-        // Save mosque URL on button click
-        document.getElementById('saveMosqueUrl').addEventListener('click', function () {
-            const mosqueUrl = document.getElementById('mosqueUrl').value;
-            fetch('/update-mosque', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ mosqueUrl: mosqueUrl })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Mosque updated successfully!');
-                    location.reload();  // Reload to display updated prayer times
-                } else {
-                    alert('Error updating mosque!');
-                }
-            });
-        });
-*/
 
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
@@ -747,51 +523,6 @@
             }
         });
 
-        /*
-        // Iqama Upload Button Click
-        document.getElementById('downloadIqamaBtn').addEventListener('click', function() {
-            const form = document.getElementById('iqamaUploadForm');
-            const youtubeUrl = form.querySelector('#iqama_url').value.trim();
-            const fileInput = form.querySelector('#iqama_file').files[0];
-    
-            if (youtubeUrl) {
-                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadIqamaModal'));
-                if (uploadModal) {
-                    uploadModal.hide();
-                }
-    
-                const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
-                confirmModal.show();
-    
-                fetch('{{ url_for("download_iqama_from_youtube") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'youtube_url': youtubeUrl
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('Error: Could not download Iqama audio.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-    
-                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    window.location.href = "{{ url_for('index') }}";
-                });
-    
-            } else if (fileInput) {
-                form.submit();
-            } else {
-                alert('Please provide either a YouTube URL or an audio file.');
-            }
-        });
-*/
         // Script to handle the removal confirmation
         document.querySelectorAll('.remove-btn').forEach(button => {
             button.addEventListener('click', function() {
@@ -801,65 +532,7 @@
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
-/*
-        // Function to enable/disable settings based on checkbox status
-        function togglePrayerSettings(prayer) {
-            const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
-            const delayInput = document.querySelector(`input[name="${prayer}_delay"]`);
-            const timeInput = document.querySelector(`input[name="${prayer}_manual_time"]`);
-            const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
-            const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
         
-            // Enable or disable based on checkbox status
-            const isEnabled = checkbox.checked;
-            delayInput.disabled = !isEnabled;
-            timeInput.disabled = !isEnabled;
-            delayRadio.disabled = !isEnabled;
-            manualRadio.disabled = !isEnabled;
-
-            
-            // Only set the default option if neither radio button is selected
-            if (isEnabled && !delayRadio.checked && !manualRadio.checked) {
-                delayRadio.checked = true;
-                delayInput.disabled = false;
-                timeInput.disabled = true;
-            } else if (isEnabled) {
-                // Apply the saved option state on load
-                if (delayRadio.checked) {
-                    delayInput.disabled = false;
-                    timeInput.disabled = true;
-                } else if (manualRadio.checked) {
-                    timeInput.disabled = false;
-                    delayInput.disabled = true;
-                }
-            }
-        }
-        
-        // Event listener setup to toggle fields on checkbox change
-        document.addEventListener('DOMContentLoaded', function() {
-            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-            prayers.forEach(prayer => {
-                const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
-                checkbox.addEventListener('change', () => togglePrayerSettings(prayer));
-                togglePrayerSettings(prayer); // Set initial state based on current checkbox status
-        
-                // Toggle delay and time inputs based on radio selection
-                const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
-                const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
-                
-                delayRadio.addEventListener('change', function() {
-                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = !this.checked;
-                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = this.checked;
-                });
-                
-                manualRadio.addEventListener('change', function() {
-                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = !this.checked;
-                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = this.checked;
-                });
-            });
-        });
-
-    */    
         // test fajr athan button
         document.getElementById('testFajrBtn').addEventListener('click', function() {
             fetch('/test_fajr', {
@@ -897,37 +570,11 @@
                 console.error('Error:', error);
             });
         });
-/*
-        // test iqama button
-        document.getElementById('testIqama').addEventListener('click', function() {
-            fetch('/test_iqama', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Iqama played successfully');
-                } else {
-                    alert('Error playing Iqama');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-*/
-
-        // Initialize Bootstrap Select
-        $(document).ready(function() {
-            $('.selectpicker').selectpicker();
-        });
 
     </script>
-        
 
-
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
-
