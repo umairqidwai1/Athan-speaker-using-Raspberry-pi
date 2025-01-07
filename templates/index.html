@@ -573,7 +573,8 @@
             slider.value = data.volume;
             box.value = data.volume;
         });
-        
+
+        /*
         // Fetch and populate mosques in the dropdown
         document.addEventListener('DOMContentLoaded', function () {
         const savedMosqueUrl = "{{ saved_mosque_url }}";  // Inject saved URL from Flask
@@ -646,7 +647,7 @@
                 }
             });
         });
-
+*/
 
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
@@ -746,6 +747,7 @@
             }
         });
 
+        /*
         // Iqama Upload Button Click
         document.getElementById('downloadIqamaBtn').addEventListener('click', function() {
             const form = document.getElementById('iqamaUploadForm');
@@ -789,7 +791,7 @@
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
-
+*/
         // Script to handle the removal confirmation
         document.querySelectorAll('.remove-btn').forEach(button => {
             button.addEventListener('click', function() {
@@ -799,7 +801,7 @@
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
-
+/*
         // Function to enable/disable settings based on checkbox status
         function togglePrayerSettings(prayer) {
             const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
@@ -857,7 +859,7 @@
             });
         });
 
-        
+    */    
         // test fajr athan button
         document.getElementById('testFajrBtn').addEventListener('click', function() {
             fetch('/test_fajr', {
@@ -895,7 +897,7 @@
                 console.error('Error:', error);
             });
         });
-
+/*
         // test iqama button
         document.getElementById('testIqama').addEventListener('click', function() {
             fetch('/test_iqama', {
@@ -914,7 +916,7 @@
                 console.error('Error:', error);
             });
         });
-
+*/
 
         // Initialize Bootstrap Select
         $(document).ready(function() {
