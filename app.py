@@ -1,56 +1,35 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from pydub.exceptions import CouldntDecodeError
 from flask_socketio import SocketIO, emit
-from datetime import datetime, timedelta
-from mosques_data import mosques
-from pygame import mixer
-import subprocess
-import threading
-import schedule
+import os
+import json
 import requests
+from datetime import datetime
+from pygame import mixer
+import schedule
+import time
+import threading
 import yt_dlp
 import evdev
-import json
-import time
-import os
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app) 
 mixer.init()
-
 
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
-last_fetched = None
-iqama_duration = None
-fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
+# Mawaqit API Link for your local mosque
+LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
 FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
-IQAMA_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
+TEMP_DIR =  '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Temp'
 
 # File to store selected athans
 SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
-IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
-SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
-MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
-
-
-# Function to load the mosque URL from the file
-def load_mosque_url():
-    if os.path.exists(MOSQUE_FILE):
-        with open(MOSQUE_FILE, 'r') as f:
-            return json.load(f).get('mosque_url')
-    return ""
-
-# Function to save mosque URL to a file
-def save_mosque_url(mosque_url):
-    with open(MOSQUE_FILE, 'w') as f:
-        json.dump({'mosque_url': mosque_url}, f)  
 
 # Function to load selected athans from file
 def load_selected_athans():
@@ -59,8 +38,8 @@ def load_selected_athans():
             return json.load(f)
     else:
         return {
-            'fajr': 'Subhanallah Beautiful Azan Fajr Makkah.mp3',
-            'regular': 'The most beautiful Azan in the World.mp3'
+            'fajr': 'default_fajr.wav',
+            'regular': 'default_regular.wav'
         }
 
 # Function to save selected athans to file
@@ -70,51 +49,6 @@ def save_selected_athans(fajr_athan, regular_athan):
             'fajr': fajr_athan,
             'regular': regular_athan
         }, f)
-
-# Function to load selected iqama from file
-def load_selected_iqama():    
-    if os.path.exists(IQAMA_FILE):
-        with open(IQAMA_FILE, 'r') as f:
-            iqama_file = json.load(f)
-            return iqama_file
-    else:
-        return 'Iqamat.mp3'
-        
-# Function to save selected iqama to file
-def save_selected_iqama(iqama_file):    
-    with open(IQAMA_FILE, 'w') as f:
-        json.dump(iqama_file, f)
-
-
-# Function to load iqama settings from a file
-def load_iqama_settings():
-    if os.path.exists(SETTINGS_FILE):
-        try:
-            with open(SETTINGS_FILE, 'r') as file:
-                return json.load(file)
-        except (json.JSONDecodeError, ValueError):
-            print("Invalid settings file detected. Using default settings.")
-    
-    # Default settings if file is missing or invalid
-    return {
-        "fajr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
-        "dhuhr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
-        "asr": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
-        "maghrib": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""},
-        "isha": {"enabled": False, "option": "delay", "delay": "", "manual_time": ""}
-    }
-
-# Function to save iqama settings to a file
-def save_iqama_settings(settings):
-    with open(SETTINGS_FILE, 'w') as file:
-        json.dump(settings, file, indent=4)
-
-# Load the mosque URL on startup
-LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
-
-# Set alsamixer to 100%
-subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
-
 
 def set_volume(volume):
     mixer.music.set_volume(volume / 100)
@@ -135,7 +69,6 @@ def save_volume_setting(volume):
 
 # Load initial selections and volume
 selected_athan = load_selected_athans()
-selected_iqama = load_selected_iqama() 
 current_volume = load_volume_setting()
 set_volume(current_volume)
 
@@ -160,18 +93,6 @@ def play_regular_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
-
-def play_iqama():
-    try:
-        file_path = os.path.join(IQAMA_DIR, selected_iqama)
-        mixer.music.load(file_path)
-        set_volume(current_volume)
-        mixer.music.play()        
-        while mixer.music.get_busy():
-            time.sleep(1)
-        time.sleep(60)
-    except Exception as e:
-        print(f"Error playing iqama: {e}")
 
 def stop_athan():
     mixer.music.stop()
@@ -219,41 +140,9 @@ def format_time(time_str):
     except ValueError:
         return time_str  # Return original if conversion fails
 
-# Function to update iqama times whenever the iqama settings form is submitted
-def update_iqama_times():
-    global fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama
-    iqama_settings = load_iqama_settings()  # Load current iqama settings
-
-    def calculate_iqama_time(prayer_key, athan_time_str):
-        setting = iqama_settings.get(prayer_key, {})
-        print(f"Calculating iqama time for {prayer_key}: setting={setting}, athan_time_str={athan_time_str}")
-        
-        if setting.get("enabled"):
-            if setting["option"] == "manual" and setting["manual_time"]:
-                print(f"Manual time for {prayer_key}: {setting['manual_time']}")
-                return setting["manual_time"]
-            elif setting["option"] == "delay" and setting["delay"]:
-                delay_minutes = int(setting["delay"])
-                athan_time = datetime.strptime(athan_time_str, "%H:%M")
-                iqama_time = athan_time + timedelta(minutes=delay_minutes)
-                iqama_str = iqama_time.strftime("%H:%M")
-                print(f"Delay time for {prayer_key}: {iqama_str}")
-                return iqama_str
-        print(f"{prayer_key} is not enabled or settings are invalid")
-        return None
-
-    # Calculate each iqama time
-    fajr_iqama = calculate_iqama_time("fajr", prayer_times_cache["fajr"])
-    dhuhr_iqama = calculate_iqama_time("dhuhr", prayer_times_cache["dohr"])
-    asr_iqama = calculate_iqama_time("asr", prayer_times_cache["asr"])
-    maghrib_iqama = calculate_iqama_time("maghrib", prayer_times_cache["maghreb"])
-    isha_iqama = calculate_iqama_time("isha", prayer_times_cache["icha"])
-
-    print("Iqama times updated:", fajr_iqama, dhuhr_iqama, asr_iqama, maghrib_iqama, isha_iqama)
-
 def handle_volume_buttons():
     global current_volume
-    print("Listening for button presses...") 
+    print("Listening for button presses...")  # Debugging log
     for event in device.read_loop():
         if event.type == evdev.ecodes.EV_KEY:
             key_event = evdev.categorize(event)
@@ -275,7 +164,7 @@ def handle_volume_buttons():
                     save_volume_setting(current_volume)
                     print(f"Volume decreased to {current_volume}")  # Debugging log
                     socketio.emit('volume_update', {'volume': current_volume})
-
+                  
 
 def main_loop():
     # Load prayer times initially when the program starts
@@ -312,34 +201,9 @@ def main_loop():
         # Sleep for a second before checking again
         time.sleep(1)  
 
-
-def iqama_loop():
-    global iqama_duration 
-    
-    while True:
-        # Get the current time in HH:MM format
-        current_time = datetime.now().strftime('%H:%M')
-        
-        # Check if each iqama time matches the current time
-        if fajr_iqama and current_time == fajr_iqama:
-            play_iqama()
-        elif dhuhr_iqama and current_time == dhuhr_iqama:
-            play_iqama()
-        elif current_time == asr_iqama:
-            play_iqama()
-        elif maghrib_iqama and current_time == maghrib_iqama:
-            play_iqama()
-        elif isha_iqama and current_time == isha_iqama:
-            play_iqama()
-
-        # Sleep for 1 second
-        time.sleep(1)
-
-
 # Start the main loop in a separate thread
 def start_background_thread():
     threading.Thread(target=main_loop, daemon=True).start()
-    threading.Thread(target=iqama_loop, daemon=True).start()
     threading.Thread(target=handle_volume_buttons, daemon=True).start()
 
 
@@ -351,7 +215,7 @@ def download_athan_from_youtube(url, save_path):
             'preferredcodec': 'mp3',
 
         }],
-        'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),  # Save as title.mp3
+        'outtmpl': os.path.join(TEMP_DIR, '%(title)s.%(ext)s'),  # Save as title.mp3
         'no-wait': True,
         'noplaylist': True,  # Ensure only the single video is downloaded
     }
@@ -359,15 +223,23 @@ def download_athan_from_youtube(url, save_path):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
+  
+    # Find the .mp3 file in the TEMP_DIR and move it to the target folder
+    for file in os.listdir(TEMP_DIR):
+        if file.endswith('.mp3'):
+            mp3_file = os.path.join(TEMP_DIR, file)
+            os.rename(mp3_file, os.path.join(save_path, file))  # Move to save_path
+            break
+
     # Cleanup: Delete any leftover .ytdl files if they exist
-    for file in os.listdir(save_path):
+    for file in os.listdir(TEMP_DIR):
         if file.endswith('.webm.ytdl'):
             os.remove(os.path.join(save_path, file))
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global selected_athan, current_volume, selected_iqama
+    global selected_athan, current_volume
 
     if request.method == 'POST':
         try:
@@ -375,7 +247,6 @@ def index():
                 # Save selected athans from the form
                 selected_fajr_athan = request.form.get('fajr_audio')
                 selected_regular_athan = request.form.get('regular_audio')
-                selected_iqama = request.form.get('iqama_audio')
 
                 # Update selected athans and save to file
                 selected_athan = {
@@ -383,7 +254,6 @@ def index():
                     'regular': selected_regular_athan
                 }
                 save_selected_athans(selected_fajr_athan, selected_regular_athan)
-                save_selected_iqama(selected_iqama)
 
             elif 'test_fajr' in request.form:
                 # Play test Fajr athan
@@ -406,29 +276,21 @@ def index():
     try:
         fajr_athan_files = os.listdir(FAJR_ATHANS_DIR)
         regular_athan_files = os.listdir(ATHANS_DIR)
-        iqama_files = os.listdir(IQAMA_DIR)
     except Exception as e:
         print(f"Error reading athan directories: {e}")
         fajr_athan_files = []
         regular_athan_files = []
-        iqama_files = []
 
     # Get prayer times for display
     prayer_times = get_prayer_times()
-    iqama_settings = load_iqama_settings()
-    # saved_mosque_url = load_mosque_url()
 
     return render_template('index.html',
                            fajr_athan_files=fajr_athan_files,
                            regular_athan_files=regular_athan_files,
-                           iqama_files=iqama_files,
                            selected_fajr_athan=selected_athan['fajr'],
                            selected_regular_athan=selected_athan['regular'],
-                           selected_iqama=selected_iqama,
-                           iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
                            volume=current_volume)
-                           #saved_mosque_url=saved_mosque_url)
 
 @app.route('/upload_fajr_athan', methods=['POST'])
 def upload_fajr_athan():
@@ -493,15 +355,6 @@ def test_regular():
         print(f"Error testing regular athan: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play regular athan'})
 
-@app.route('/test_iqama', methods=['POST'])
-def test_iqama():
-    try:
-        play_iqama()
-        return jsonify({'status': 'success'})
-    except Exception as e:
-        print(f"Error testing iqama: {e}")
-        return jsonify({'status': 'error', 'message': 'Failed to play iqama'})
-
 # Route to handle Fajr Athan YouTube download
 @app.route('/download_fajr_from_youtube', methods=['POST'])
 def download_fajr_from_youtube():
@@ -520,49 +373,6 @@ def download_regular_from_youtube():
         return redirect(url_for('index'))  # Redirect to homepage or success page
     return "Error: No YouTube URL provided", 400
 
-# Route to handle Iqama YouTube download
-@app.route('/download_iqama_from_youtube', methods=['POST'])
-def download_iqama_from_youtube():
-    youtube_url = request.form.get('youtube_url')
-    if youtube_url:
-        download_athan_from_youtube(youtube_url, IQAMA_DIR)
-        return redirect(url_for('index'))  # Redirect to homepage or success page
-    return "Error: No YouTube URL provided", 400
-
-# Route to upload Iqama file directly
-@app.route('/upload_iqama', methods=['POST'])
-def upload_iqama():
-    if 'file' not in request.files:
-        return redirect(url_for('index'))
-
-    file = request.files['file']
-    if file.filename == '':
-        return redirect(url_for('index'))
-
-    if file:
-        filename = file.filename
-        file.save(os.path.join(IQAMA_DIR, filename))
-        return redirect(url_for('index'))
-
-# Route to handle saving iqama settings
-@app.route('/save_iqama_settings', methods=['POST'])
-def save_iqama_settings_route():
-    iqama_settings = {}
-    prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
-    
-    for prayer in prayers:
-        iqama_settings[prayer] = {
-            'enabled': request.form.get(f'{prayer}_enabled') == 'on',
-            'option': request.form.get(f'{prayer}_option'),
-            'delay': request.form.get(f'{prayer}_delay'),
-            'manual_time': request.form.get(f'{prayer}_manual_time')
-        }
-    
-    save_iqama_settings(iqama_settings)
-    update_iqama_times()
-    return redirect(url_for('index'))
-
-
 #Route to handle deleting Athan files
 @app.route('/remove_athan', methods=['POST'])
 def remove_athan():
@@ -576,8 +386,6 @@ def remove_athan():
                 file_path = os.path.join(FAJR_ATHANS_DIR, athan_to_remove)
             elif audio_type == 'regular':
                 file_path = os.path.join(ATHANS_DIR, athan_to_remove)
-            elif audio_type == 'iqama':
-                file_path = os.path.join(IQAMA_DIR, athan_to_remove)
             else:
                 raise ValueError("Invalid audio type specified.")
 
@@ -592,44 +400,8 @@ def remove_athan():
 
     return redirect(url_for('index'))  # Redirect back to the index view
 
-
-@app.route('/update-mosque', methods=['POST'])
-def update_mosque():
-    global LinkAPI
-    try:
-        data = request.get_json()
-        mosque_url = data.get('mosqueUrl')
-
-        if mosque_url:
-            # Extract the last part of the mosque URL
-            mosque_identifier = mosque_url.split('/')[-1]
-
-            # Update the LinkAPI with the new mosque identifier
-            LinkAPI = f"http://localhost:8000/api/v1/{mosque_identifier}/prayer-times"
-
-            # Save the mosque URL for persistence
-            save_mosque_url(mosque_url)
-
-            # Fetch the new prayer times and force refresh
-            get_prayer_times()
-
-            return jsonify({'success': True})
-        else:
-            return jsonify({'success': False}), 400
-    except Exception as e:
-        print(f"Error updating mosque: {e}")
-        return jsonify({'success': False}), 500
-
-
-
-@app.route('/mosques')
-def get_mosques():
-    return jsonify(mosques)
-
-
 # Start the background thread when the Flask app starts
 start_background_thread()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
