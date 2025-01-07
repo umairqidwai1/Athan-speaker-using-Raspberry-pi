@@ -17,6 +17,8 @@ import os
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+mixer.init()
+
 
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
@@ -39,7 +41,7 @@ MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json
 device = evdev.InputDevice('/dev/input/event0')
 
 
-'''# Function to load the mosque URL from the file
+# Function to load the mosque URL from the file
 def load_mosque_url():
     if os.path.exists(MOSQUE_FILE):
         with open(MOSQUE_FILE, 'r') as f:
@@ -50,7 +52,7 @@ def load_mosque_url():
 def save_mosque_url(mosque_url):
     with open(MOSQUE_FILE, 'w') as f:
         json.dump({'mosque_url': mosque_url}, f)  
-'''
+
 # Function to load selected athans from file
 def load_selected_athans():
     if os.path.exists(SELECTION_FILE):
@@ -155,10 +157,7 @@ current_volume = load_volume_setting()
 set_volume(current_volume)
 
 def play_fajr_athan():
-    if mixer.get_init():
-        return
     try:
-        mixer.init()
         file_path = os.path.join(FAJR_ATHANS_DIR, selected_athan['fajr'])
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -167,14 +166,9 @@ def play_fajr_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing Fajr athan: {e}")
-    finally:
-        mixer.quit()
 
 def play_regular_athan():
-    if mixer.get_init():
-        return
     try:
-        mixer.init()
         file_path = os.path.join(ATHANS_DIR, selected_athan['regular'])
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -183,14 +177,9 @@ def play_regular_athan():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
-    finally:
-        mixer.quit()
 
 def play_iqama():
-    if mixer.get_init():
-        return
     try:
-        mixer.init()
         file_path = os.path.join(IQAMA_DIR, selected_iqama)
         mixer.music.load(file_path)
         set_volume(current_volume)
@@ -199,60 +188,44 @@ def play_iqama():
             time.sleep(1)
     except Exception as e:
         print(f"Error playing iqama: {e}")
-    finally:
-        mixer.quit()
-
 
 def stop_athan():
+    mixer.music.stop()
+
+def get_prayer_times():
+    global prayer_times_cache
+
     try:
-        # Check if mixer is initialized
-        if mixer.get_init():
-            # Check if music is playing before stopping
-            if mixer.music.get_busy():
-                mixer.music.stop()
-            mixer.quit()
+        # Fetch prayer times from the API
+        response = requests.get(LinkAPI)
+        if response.status_code == 200:
+            prayer_times = response.json()
+
+            # Update the cache with the fetched prayer times
+            prayer_times_cache = {
+                'fajr_12hr': format_time(prayer_times.get('fajr', '')),
+                'sunset_12hr': format_time(prayer_times.get('sunset', '')),
+                'dohr_12hr': format_time(prayer_times.get('dohr', '')),
+                'asr_12hr': format_time(prayer_times.get('asr', '')),
+                'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
+                'icha_12hr': format_time(prayer_times.get('icha', '')),
+                'fajr': prayer_times.get('fajr', ''),
+                'dohr': prayer_times.get('dohr', ''),
+                'asr': prayer_times.get('asr', ''),
+                'maghreb': prayer_times.get('maghreb', ''),
+                'icha': prayer_times.get('icha', ''),
+            }
+
         else:
-            print("Mixer is not initialized. Nothing to stop.")
+            raise Exception(f"Failed to retrieve prayer times. Status code: {response.status_code}")
+
     except Exception as e:
-        print(f"Error stopping athan: {e}")
-        
+        print(f"Error retrieving prayer times: {e}")
+        return None  # Or return an empty dict if preferred
 
-def get_prayer_times(force_refresh=False):
-    global prayer_times_cache, last_fetched
-
-    # Get the current time
-    now = datetime.now()
-
-    # If last_fetched is None (first run) or it’s a new day, or if it’s exactly 2 AM, fetch new prayer times
-    if force_refresh or last_fetched is None or (now.date() != last_fetched.date()) or (now.hour == 2 and now.minute == 0):
-        try:
-            response = requests.get(LinkAPI)
-            if response.status_code == 200:
-                prayer_times = response.json()
-
-                # Update the cache and last fetched time
-                prayer_times_cache = {
-                    'fajr_12hr': format_time(prayer_times.get('fajr', '')),
-                    'sunset_12hr': format_time(prayer_times.get('sunset', '')),
-                    'dohr_12hr': format_time(prayer_times.get('dohr', '')),
-                    'asr_12hr': format_time(prayer_times.get('asr', '')),
-                    'maghreb_12hr': format_time(prayer_times.get('maghreb', '')),
-                    'icha_12hr': format_time(prayer_times.get('icha', '')),
-                    'fajr': prayer_times.get('fajr', ''),
-                    'dohr': prayer_times.get('dohr', ''),
-                    'asr': prayer_times.get('asr', ''),
-                    'maghreb': prayer_times.get('maghreb', ''),
-                    'icha': prayer_times.get('icha', ''),
-                }
-                last_fetched = now
-            else:
-                raise Exception(f"Failed to retrieve prayer times. Status code: {response.status_code}")
-        except Exception as e:
-            print(f"Error retrieving prayer times: {e}")
-            return None  # Or return an empty dict if preferred
-
-    # Return the cached prayer times
+    # Return the fetched prayer times
     return prayer_times_cache
+
 
 def format_time(time_str):
     """Convert 24-hour time format to 12-hour time format with AM/PM."""
@@ -320,35 +293,25 @@ def handle_volume_buttons():
                     socketio.emit('volume_update', {'volume': current_volume})
 
 
-
 def main_loop():
     # Load prayer times initially when the program starts
     prayer_times = get_prayer_times()
 
-    last_updated_date = None  # To track the last date the prayer times were updated
+    # Check if prayer times were fetched successfully
+    if not prayer_times:
+        print("Failed to load prayer times. Exiting...")
+        return  # Exit if prayer times cannot be fetched
+
+    # Extract individual prayer times (24-hour format) once
+    FAJR = prayer_times.get('fajr', '')
+    DHUHR = prayer_times.get('dohr', '')
+    ASR = prayer_times.get('asr', '')
+    MAGHRIB = prayer_times.get('maghreb', '')
+    ISHA = prayer_times.get('icha', '')
 
     while True:
+        # Get the current time in 24-hour format (HH:MM)
         current_time = datetime.now().strftime('%H:%M')
-        current_date = datetime.now().date()
-
-        # Update prayer times at 2:00 AM
-        if current_time == "02:00" and last_updated_date != current_date:
-            prayer_times = get_prayer_times()
-
-            if not prayer_times:
-                print("Failed to load prayer times. Retrying in 1 minute...")
-                time.sleep(60)  # Wait 1 minute before retrying
-                continue  # Retry the loop
-
-            last_updated_date = current_date  # Set the last updated date
-            print("Prayer times updated at 2:00 AM.")
-
-        # Extract individual prayer times (24-hour format)
-        FAJR = prayer_times.get('fajr', '')
-        DHUHR = prayer_times.get('dohr', '')
-        ASR = prayer_times.get('asr', '')
-        MAGHRIB = prayer_times.get('maghreb', '')
-        ISHA = prayer_times.get('icha', '')
 
         # Check if the current time matches any prayer time
         if current_time == FAJR:
@@ -362,7 +325,9 @@ def main_loop():
         elif current_time == ISHA:
             play_regular_athan()
 
-        time.sleep(1)
+        # Sleep for a second before checking again
+        time.sleep(1)  
+
 
 def iqama_loop():
     global iqama_duration 
@@ -383,7 +348,7 @@ def iqama_loop():
         elif isha_iqama and current_time == isha_iqama:
             play_iqama()
 
-        # Sleep for 60 seconds to avoid repeated checks within the same minute
+        # Sleep for 1 second
         time.sleep(1)
 
         # If audio is shorter than 60 seconds, add a delay
@@ -422,8 +387,6 @@ def download_athan_from_youtube(url, save_path):
             os.remove(os.path.join(save_path, file))
 
 @socketio.on('connect')
-def handle_connect():
-    print('Client connected')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -652,7 +615,7 @@ def remove_athan():
 
     return redirect(url_for('index'))  # Redirect back to the index view
 
-'''
+
 @app.route('/update-mosque', methods=['POST'])
 def update_mosque():
     global LinkAPI
@@ -671,7 +634,7 @@ def update_mosque():
             save_mosque_url(mosque_url)
 
             # Fetch the new prayer times and force refresh
-            get_prayer_times(force_refresh=True)
+            get_prayer_times()
 
             return jsonify({'success': True})
         else:
@@ -680,7 +643,7 @@ def update_mosque():
         print(f"Error updating mosque: {e}")
         return jsonify({'success': False}), 500
 
-'''
+
 
 @app.route('/mosques')
 def get_mosques():
