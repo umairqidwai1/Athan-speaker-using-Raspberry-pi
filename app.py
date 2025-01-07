@@ -139,14 +139,6 @@ def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
 
-# Get audio length in seconds
-def get_audio_duration(file_path):
-    try:
-        audio = AudioSegment.from_file(file_path)
-        return len(audio) / 1000  # Duration in seconds
-    except (OSError, CouldntDecodeError):
-        print("Error: The provided file is not a valid audio file.")
-        return None  # Return None to indicate an invalid file
 
 # Load initial selections and volume
 selected_athan = load_selected_athans()
@@ -184,6 +176,7 @@ def play_iqama():
         mixer.music.play()        
         while mixer.music.get_busy():
             time.sleep(1)
+        time.sleep(60)
     except Exception as e:
         print(f"Error playing iqama: {e}")
 
