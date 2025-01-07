@@ -3,7 +3,6 @@ from pydub.exceptions import CouldntDecodeError
 from flask_socketio import SocketIO, emit
 from datetime import datetime, timedelta
 from mosques_data import mosques
-from pydub import AudioSegment
 from pygame import mixer
 import subprocess
 import threading
@@ -125,8 +124,7 @@ subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 
 
 def set_volume(volume):
-    if mixer.get_init():  # Only adjust volume if mixer is active
-        mixer.music.set_volume(volume / 100)
+    mixer.music.set_volume(volume / 100)
 
 # Function to load volume setting from file
 def load_volume_setting():
@@ -386,7 +384,6 @@ def download_athan_from_youtube(url, save_path):
         if file.endswith('.webm.ytdl'):
             os.remove(os.path.join(save_path, file))
 
-@socketio.on('connect')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
