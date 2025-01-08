@@ -303,7 +303,7 @@ def main_loop():
             play_regular_athan()
         elif current_time == ISHA:
             play_regular_athan()
-        elif current_time == '09:30':
+        elif current_time == '09:38':
             play_regular_athan()
 
         # Sleep for a second before checking again
@@ -419,6 +419,7 @@ def index():
     # Get prayer times for display
     prayer_times = get_prayer_times()
     iqama_settings = load_iqama_settings()
+    saved_mosque_url = load_mosque_url()
 
 
     return render_template('index.html',
