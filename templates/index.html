@@ -641,6 +641,50 @@
             }
         });
 
+        // Iqama Upload Button Click
+        document.getElementById('downloadIqamaBtn').addEventListener('click', function() {
+            const form = document.getElementById('iqamaUploadForm');
+            const youtubeUrl = form.querySelector('#iqama_url').value.trim();
+            const fileInput = form.querySelector('#iqama_file').files[0];
+    
+            if (youtubeUrl) {
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadIqamaModal'));
+                if (uploadModal) {
+                    uploadModal.hide();
+                }
+    
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
+                confirmModal.show();
+    
+                fetch('{{ url_for("download_iqama_from_youtube") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'youtube_url': youtubeUrl
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('Error: Could not download Iqama audio.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+    
+                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
+                    window.location.href = "{{ url_for('index') }}";
+                });
+    
+            } else if (fileInput) {
+                form.submit();
+            } else {
+                alert('Please provide either a YouTube URL or an audio file.');
+            }
+        });
+
         // Script to handle the removal confirmation
         document.querySelectorAll('.remove-btn').forEach(button => {
             button.addEventListener('click', function() {
@@ -648,6 +692,63 @@
                 const selectedValue = selectElement.value;
                 document.getElementById('athan_to_remove').value = selectedValue;
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
+            });
+        });
+
+        // Function to enable/disable settings based on checkbox status
+        function togglePrayerSettings(prayer) {
+            const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
+            const delayInput = document.querySelector(`input[name="${prayer}_delay"]`);
+            const timeInput = document.querySelector(`input[name="${prayer}_manual_time"]`);
+            const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
+            const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
+        
+            // Enable or disable based on checkbox status
+            const isEnabled = checkbox.checked;
+            delayInput.disabled = !isEnabled;
+            timeInput.disabled = !isEnabled;
+            delayRadio.disabled = !isEnabled;
+            manualRadio.disabled = !isEnabled;
+
+            
+            // Only set the default option if neither radio button is selected
+            if (isEnabled && !delayRadio.checked && !manualRadio.checked) {
+                delayRadio.checked = true;
+                delayInput.disabled = false;
+                timeInput.disabled = true;
+            } else if (isEnabled) {
+                // Apply the saved option state on load
+                if (delayRadio.checked) {
+                    delayInput.disabled = false;
+                    timeInput.disabled = true;
+                } else if (manualRadio.checked) {
+                    timeInput.disabled = false;
+                    delayInput.disabled = true;
+                }
+            }
+        }
+        
+        // Event listener setup to toggle fields on checkbox change
+        document.addEventListener('DOMContentLoaded', function() {
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+            prayers.forEach(prayer => {
+                const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
+                checkbox.addEventListener('change', () => togglePrayerSettings(prayer));
+                togglePrayerSettings(prayer); // Set initial state based on current checkbox status
+        
+                // Toggle delay and time inputs based on radio selection
+                const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
+                const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
+                
+                delayRadio.addEventListener('change', function() {
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = this.checked;
+                });
+                
+                manualRadio.addEventListener('change', function() {
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = this.checked;
+                });
             });
         });
         
@@ -694,9 +795,32 @@
             $('.selectpicker').selectpicker();
         });
 
+        // test iqama button
+        document.getElementById('testIqama').addEventListener('click', function() {
+            fetch('/test_iqama', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Iqama played successfully');
+                } else {
+                    alert('Error playing Iqama');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Initialize Bootstrap Select
+        $(document).ready(function() {
+            $('.selectpicker').selectpicker();
+        });
 
     </script>
 
-=</body>
+</body>
 
 </html>
