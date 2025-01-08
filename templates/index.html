@@ -177,7 +177,6 @@
         }
         
     </style>
-    
 </head>
 
 <body>
@@ -192,8 +191,9 @@
                 <li class="list-group-item"><strong>Asr:</strong> {{ prayer_times['asr_12hr'] }}</li>
                 <li class="list-group-item"><strong>Maghrib:</strong> {{ prayer_times['maghreb_12hr'] }}</li>
                 <li class="list-group-item"><strong>Isha:</strong> {{ prayer_times['icha_12hr'] }}</li>
-                 <!-- Button to open the modal -->
+                <!-- Button to open the modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mosqueModal" style="margin-top: 20px;">Choose Mosque</button>
+
             </ul>
         </div>
 
@@ -252,7 +252,7 @@
                     <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
                 </div>
                 
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#iqamaSettingsModal">Iqama Settings</button>        
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#iqamaSettingsModal">Iqama Settings</button>
                 <button type="submit" name="save_changes" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
@@ -432,6 +432,35 @@
     </div>
 </div>
 
+<!-- Mosque Selection Modal -->
+<div class="modal fade" id="mosqueModal" tabindex="-1" role="dialog" aria-labelledby="mosqueModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mosqueModalLabel">Enter Mosque URL</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="mosqueForm">
+                    <div class="form-group">
+                        <label for="mosqueSelect">Select a Mosque</label>
+                        <select id="mosqueSelect" class="form-control selectpicker" data-live-search="true">
+                            <option value="" disabled selected hidden>Select from the list</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mosqueUrl">Or Enter Mosque URL</label>
+                        <input type="text" class="form-control" id="mosqueUrl" placeholder="https://mawaqit.net/en/m/mosque-name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveMosqueUrl">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Iqama Settings Modal -->
 <div class="modal fade" id="iqamaSettingsModal" tabindex="-1" aria-labelledby="iqamaSettingsModalLabel" aria-hidden="true">
@@ -488,36 +517,6 @@
     </div>
 </div>
 
-<!-- Mosque Selection Modal -->
-<div class="modal fade" id="mosqueModal" tabindex="-1" role="dialog" aria-labelledby="mosqueModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="mosqueModalLabel">Enter Mosque URL</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="mosqueForm">
-                    <div class="form-group">
-                        <label for="mosqueSelect">Select a Mosque</label>
-                        <select id="mosqueSelect" class="form-control selectpicker" data-live-search="true">
-                            <option value="" disabled selected hidden>Select from the list</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="mosqueUrl">Or Enter Mosque URL</label>
-                        <input type="text" class="form-control" id="mosqueUrl" placeholder="https://mawaqit.net/en/m/mosque-name">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveMosqueUrl">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 
 <!-- JavaScript -->
@@ -534,6 +533,7 @@
     <!-- Bootstrap Select JavaScript (load after Bootstrap JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 
+        
     <script>
         
         // Sync slider and input box
@@ -573,6 +573,80 @@
             slider.value = data.volume;
             box.value = data.volume;
         });
+        
+        // Fetch and populate mosques in the dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+        const savedMosqueUrl = "{{ saved_mosque_url }}";  // Inject saved URL from Flask
+        const mosqueSelect = document.getElementById('mosqueSelect');
+        const mosqueUrlInput = document.getElementById('mosqueUrl');
+    
+        // Fetch and populate mosques in the dropdown
+        fetch('/mosques')
+            .then(response => response.json())
+            .then(data => {
+                // Clear any existing options except the placeholder
+                mosqueSelect.innerHTML = mosqueSelect.querySelector('option[hidden]').outerHTML;
+    
+                // Populate the dropdown
+                for (const [name, url] of Object.entries(data)) {
+                    let option = document.createElement('option');
+                    option.value = url;
+                    option.text = name;
+                    
+                    // If the saved URL matches this option, select it
+                    if (url === savedMosqueUrl) {
+                        option.selected = true;
+                    }
+                    mosqueSelect.appendChild(option);
+                }
+    
+                // Set the input field if the saved URL doesn't match a dropdown option
+                if (!mosqueSelect.value) {
+                    mosqueUrlInput.value = savedMosqueUrl || '';  // Use saved URL if no match
+                }
+    
+                // Refresh Bootstrap Select to display new options
+                $('.selectpicker').selectpicker('refresh');
+            });
+    
+        // Reset URL input when the dropdown selection changes
+        mosqueSelect.addEventListener('change', function () {
+            mosqueUrlInput.value = this.value || '';  // Set input to selected URL, or clear if empty
+        });
+    });
+
+
+        // Set the URL field based on dropdown selection
+        document.getElementById('mosqueSelect').addEventListener('change', function () {
+            const mosqueUrl = document.getElementById('mosqueUrl');
+            if (this.value) {
+                mosqueUrl.value = this.value;  // Set the URL field to selected mosque's URL
+            } else {
+                mosqueUrl.value = '';  // Clear URL field if no mosque selected
+            }
+        });
+        
+        // Save mosque URL on button click
+        document.getElementById('saveMosqueUrl').addEventListener('click', function () {
+            const mosqueUrl = document.getElementById('mosqueUrl').value;
+            fetch('/update-mosque', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mosqueUrl: mosqueUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Mosque updated successfully!');
+                    location.reload();  // Reload to display updated prayer times
+                } else {
+                    alert('Error updating mosque!');
+                }
+            });
+        });
+
 
         // Fajr Athan Upload Button Click
         document.getElementById('downloadFajrBtn').addEventListener('click', function() {
@@ -782,6 +856,7 @@
                 });
             });
         });
+
         
         // test fajr athan button
         document.getElementById('testFajrBtn').addEventListener('click', function() {
@@ -840,12 +915,15 @@
             });
         });
 
+
         // Initialize Bootstrap Select
         $(document).ready(function() {
             $('.selectpicker').selectpicker();
         });
 
     </script>
+        
+
 
 </body>
 
