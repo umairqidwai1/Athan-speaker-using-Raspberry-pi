@@ -192,6 +192,8 @@
                 <li class="list-group-item"><strong>Asr:</strong> {{ prayer_times['asr_12hr'] }}</li>
                 <li class="list-group-item"><strong>Maghrib:</strong> {{ prayer_times['maghreb_12hr'] }}</li>
                 <li class="list-group-item"><strong>Isha:</strong> {{ prayer_times['icha_12hr'] }}</li>
+                 <!-- Button to open the modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mosqueModal" style="margin-top: 20px;">Choose Mosque</button>
             </ul>
         </div>
 
@@ -237,7 +239,20 @@
                     </select>
                     <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadRegularModal">Add</button>
                 </div>
-        
+                <div class="form-row mb-3">
+                    <label for="iqama_audio" class="form-label">Iqama Audio:</label>
+                </div>
+                <div class="form-row">
+                    <button type="button" class="btn btn-danger remove-btn" data-bs-toggle="modal" data-bs-target="#confirmRemoveModal" data-audio-type="iqama">Remove</button>
+                    <select name="iqama_audio" class="form-select">
+                        {% for file in iqama_files %}
+                        <option value="{{ file }}" {% if selected_iqama == file %}selected{% endif %}>{{ file }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-secondary add-btn" data-bs-toggle="modal" data-bs-target="#uploadIqamaModal">Add</button>
+                </div>
+                
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#iqamaSettingsModal">Iqama Settings</button>        
                 <button type="submit" name="save_changes" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
@@ -292,12 +307,38 @@
             </div>
         </div>
 
+        <!-- Upload Iqama Audio Modal -->
+        <div class="modal fade" id="uploadIqamaModal" tabindex="-1" aria-labelledby="uploadIqamaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadIqamaModalLabel">Upload Iqama Audio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="iqamaUploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('upload_iqama') }}">
+                            <div class="mb-3">
+                                <label for="iqama_file" class="form-label">Select Iqama Audio File</label>
+                                <input type="file" class="form-control" id="iqama_file" name="file" accept="audio/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="iqama_url" class="form-label">Or Enter YouTube URL</label>
+                                <input type="text" class="form-control" id="iqama_url" name="youtube_url" placeholder="https://youtube.com/your-url">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="downloadIqamaBtn">Upload Iqama</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     <!-- System Controls Section -->
     <div class="system-controls">
         <h2>System Controls</h2>
         <button type="button" class="btn btn-secondary" id="testFajrBtn">Test Fajr Athan</button>
         <button type="button" class="btn btn-secondary" id="testRegularBtn">Test Regular Athan</button>
+        <button type="button" class="btn btn-secondary" id="testIqama">Test Iqama</button>
         <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#confirmStopModal">Stop Athan</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
     </div>
@@ -385,6 +426,62 @@
                     <input type="hidden" id="athan_to_remove" name="athan_to_remove" value="">
                     <input type="hidden" id="audio_type" name="audio_type" value="">
                     <button type="submit" class="btn btn-danger modal-btn">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Iqama Settings Modal -->
+<div class="modal fade" id="iqamaSettingsModal" tabindex="-1" aria-labelledby="iqamaSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="iqamaSettingsModalLabel">Iqama Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="iqamaSettingsForm" method="POST" action="{{ url_for('save_iqama_settings_route') }}">
+
+
+                    {% for prayer in ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] %}
+                    <div class="form-group mb-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h6>{{ prayer.capitalize() }} Iqama</h6>
+                            <div class="form-check form-switch">
+                                <input type="checkbox" name="{{ prayer }}_enabled" class="form-check-input iqama-toggle"
+                                       id="{{ prayer }}_toggle" {% if iqama_settings.get(prayer, {}).get('enabled') %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ prayer }}_toggle"></label>
+                            </div>
+                        </div>
+
+                    <div class="mt-2 ms-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="delay"
+                                   data-prayer="{{ prayer.lower() }}" 
+                                   {% if iqama_settings[prayer.lower()]['option'] == 'delay' %}checked{% endif %}>
+                            <label class="form-check-label">Time After Athan (minutes)</label>
+                            <input type="number" name="{{ prayer.lower() }}_delay" class="form-control delay-input mt-1" min="0"
+                                   placeholder="Enter minutes after athan" 
+                                   value="{{ iqama_settings[prayer.lower()]['delay'] or '' }}"
+                                   {% if iqama_settings[prayer.lower()]['option'] != 'delay' %}disabled{% endif %}>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input option-radio" type="radio" name="{{ prayer.lower() }}_option" value="manual"
+                                   data-prayer="{{ prayer.lower() }}" 
+                                   {% if iqama_settings[prayer.lower()]['option'] == 'manual' %}checked{% endif %}>
+                            <label class="form-check-label">Specific Time</label>
+                            <input type="time" name="{{ prayer.lower() }}_manual_time" class="form-control time-input mt-1"
+                                   placeholder="Enter specific time"
+                                   value="{{ iqama_settings[prayer.lower()]['manual_time'] or '' }}"
+                                   {% if iqama_settings[prayer.lower()]['option'] != 'manual' %}disabled{% endif %}>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
                 </form>
             </div>
         </div>
