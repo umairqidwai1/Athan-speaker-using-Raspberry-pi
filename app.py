@@ -1,15 +1,17 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_socketio import SocketIO, emit
-import os
-import json
-import requests
-from datetime import datetime
+from datetime import datetime, timedelta
+from mosques_data import mosques
 from pygame import mixer
-import schedule
-import time
+import subprocess
 import threading
+import schedule
+import requests
 import yt_dlp
 import evdev
+import json
+import time
+import os
 
 app = Flask(__name__)
 socketio = SocketIO(app) 
@@ -34,7 +36,21 @@ SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_ath
 VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
 IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
 SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
+MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
+
+
+# Function to load the mosque URL from the file
+def load_mosque_url():
+    if os.path.exists(MOSQUE_FILE):
+        with open(MOSQUE_FILE, 'r') as f:
+            return json.load(f).get('mosque_url')
+    return ""
+
+# Function to save mosque URL to a file
+def save_mosque_url(mosque_url):
+    with open(MOSQUE_FILE, 'w') as f:
+        json.dump({'mosque_url': mosque_url}, f)  
 
 # Function to load selected athans from file
 def load_selected_athans():
@@ -67,6 +83,7 @@ def load_selected_iqama():
 def save_selected_iqama(iqama_file):    
     with open(IQAMA_FILE, 'w') as f:
         json.dump(iqama_file, f)
+
 # Function to load iqama settings from a file
 def load_iqama_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -89,6 +106,9 @@ def load_iqama_settings():
 def save_iqama_settings(settings):
     with open(SETTINGS_FILE, 'w') as file:
         json.dump(settings, file, indent=4)
+
+# Set alsamixer to 100%
+subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 
 def set_volume(volume):
     mixer.music.set_volume(volume / 100)
@@ -143,6 +163,7 @@ def play_iqama():
         mixer.music.play()        
         while mixer.music.get_busy():
             time.sleep(1)
+        time.sleep(60)
     except Exception as e:
         print(f"Error playing iqama: {e}")
 
@@ -409,7 +430,8 @@ def index():
                            selected_iqama=selected_iqama,
                            iqama_settings=iqama_settings,
                            prayer_times=prayer_times,
-                           volume=current_volume)
+                           volume=current_volume,
+                           saved_mosque_url=saved_mosque_url)
 
 @app.route('/upload_fajr_athan', methods=['POST'])
 def upload_fajr_athan():
@@ -569,6 +591,39 @@ def remove_athan():
             print(f"Error removing {athan_to_remove}: {str(e)}")
 
     return redirect(url_for('index'))  # Redirect back to the index view
+
+
+@app.route('/update-mosque', methods=['POST'])
+def update_mosque():
+    global LinkAPI
+    try:
+        data = request.get_json()
+        mosque_url = data.get('mosqueUrl')
+
+        if mosque_url:
+            # Extract the last part of the mosque URL
+            mosque_identifier = mosque_url.split('/')[-1]
+
+            # Update the LinkAPI with the new mosque identifier
+            LinkAPI = f"http://localhost:8000/api/v1/{mosque_identifier}/prayer-times"
+
+            # Save the mosque URL for persistence
+            save_mosque_url(mosque_url)
+
+            # Fetch the new prayer times
+            get_prayer_times()
+
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False}), 400
+    except Exception as e:
+        print(f"Error updating mosque: {e}")
+        return jsonify({'success': False}), 500
+
+
+@app.route('/mosques')
+def get_mosques():
+    return jsonify(mosques)
 
 # Start the background thread when the Flask app starts
 start_background_thread()
