@@ -389,15 +389,14 @@ def index():
             elif 'test_fajr' in request.form:
                 # Play test Fajr athan
                 play_fajr_athan()
-            elif 'test_regular' in request.form:
-                # Play test regular athan
-                play_regular_athan()
             elif 'stop_athan' in request.form:
                 # Stop currently playing athan
                 stop_athan()
-            elif 'reboot' in request.form:
+            elif 'reboot' in request.json:
                 # Trigger Raspberry Pi reboot
                 os.system('sudo reboot')
+                return jsonify({'status': 'success'})
+
 
         except Exception as e:
             print(f"Error processing POST request: {e}")
