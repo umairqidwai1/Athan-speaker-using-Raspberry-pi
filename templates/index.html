@@ -797,6 +797,44 @@
                 document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
             });
         });
+        // submit the remove athan button in the background
+        document.querySelector('#confirmRemoveModal form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+        
+            const formData = new FormData(this);
+        
+            fetch('/remove_athan', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+        
+                        // Dynamically remove the deleted option from the select dropdown
+                        const audioType = formData.get('audio_type');
+                        const selectElement = document.querySelector(`button[data-audio-type="${audioType}"]`).nextElementSibling;
+                        const selectedValue = formData.get('athan_to_remove');
+        
+                        const optionToRemove = Array.from(selectElement.options).find(option => option.value === selectedValue);
+                        if (optionToRemove) {
+                            selectElement.removeChild(optionToRemove);
+                        }
+        
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
+                        modal.hide();
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                });
+        });
+
 
         
         // Function to enable/disable settings based on checkbox status
