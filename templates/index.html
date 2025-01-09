@@ -376,9 +376,7 @@
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-secondary modal-btn" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" style="display: inline;">
-                    <button type="submit" name="reboot" class="btn btn-danger modal-btn">Reboot</button>
-                </form>
+                <button type="button" id="rebootBtn" class="btn btn-danger modal-btn">Reboot</button>
             </div>
         </div>
     </div>
@@ -974,6 +972,33 @@
                     alert('An error occurred while stopping the Athan.');
                 });
         });
+
+        // Reboot button
+        document.getElementById('rebootBtn').addEventListener('click', function () {
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reboot: true }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Close the modal after reboot
+                        const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
+                        rebootModal.hide();
+                        alert('Reboot initiated. Please wait for the system to restart.');
+                    } else {
+                        alert('Error: Unable to reboot.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error: Unable to reboot.');
+                });
+        });
+
 
 
         // Initialize Bootstrap Select
