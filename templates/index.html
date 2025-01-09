@@ -419,11 +419,7 @@
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-secondary modal-btn" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" action="/remove_athan" style="display: inline;">
-                    <input type="hidden" id="athan_to_remove" name="athan_to_remove" value="">
-                    <input type="hidden" id="audio_type" name="audio_type" value="">
-                    <button type="submit" class="btn btn-danger modal-btn">Remove</button>
-                </form>
+                <button type="button" class="btn btn-danger modal-btn" id="confirmRemoveAthanBtn">Remove</button>
             </div>
         </div>
     </div>
@@ -788,15 +784,54 @@
             }
         });
 
-        // Script to handle the removal confirmation
+        
+
+        // Store selected Athan details globally for the modal
+        let athanToRemove = '';
+        let audioType = '';
+    
+        // Handle the removal confirmation button click
         document.querySelectorAll('.remove-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 const selectElement = button.nextElementSibling; // The select element after the button
-                const selectedValue = selectElement.value;
-                document.getElementById('athan_to_remove').value = selectedValue;
-                document.getElementById('audio_type').value = button.dataset.audioType; // Set audio type
+                athanToRemove = selectElement.value; // Store the selected value
+                audioType = button.dataset.audioType; // Store the audio type
             });
         });
+    
+        // Handle the "Remove" button click in the modal
+        document.getElementById('confirmRemoveAthanBtn').addEventListener('click', function () {
+            fetch('/remove_athan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ athan_to_remove: athanToRemove, audio_type: audioType }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Hide the modal
+                        const removeModal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
+                        removeModal.hide();
+    
+                        // Optionally, update the UI dynamically
+                        alert('Athan removed successfully!');
+                        // Example: remove the option from the dropdown
+                        const selectElement = document.querySelector(`.remove-btn[data-audio-type="${audioType}"]`).nextElementSibling;
+                        const optionToRemove = Array.from(selectElement.options).find(option => option.value === athanToRemove);
+                        if (optionToRemove) {
+                            selectElement.removeChild(optionToRemove);
+                        }
+                    } else {
+                        alert('Failed to remove Athan. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while removing the Athan.');
+                });
+        });
+        
 
         
         // Function to enable/disable settings based on checkbox status
