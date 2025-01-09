@@ -800,6 +800,10 @@
             e.preventDefault(); // Prevent the default form submission
         
             const formData = new FormData(this);
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
+            modal.hide();
             
             fetch('/remove_athan', {
                 method: 'POST',
@@ -808,10 +812,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        
-                        // Close the modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
-                        modal.hide();
                         
                         // Dynamically remove the deleted option from the select dropdown
                         const audioType = formData.get('audio_type');
