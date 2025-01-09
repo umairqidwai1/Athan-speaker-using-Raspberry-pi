@@ -820,14 +820,15 @@
                         }
         
                         // Close the modal
-                        modal.hide();
                         const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
+                        modal.hide();
                     } else {
                         alert(`Error: ${data.message}`);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('An error occurred while stopping the Athan.');
                 });
         });
 
@@ -960,7 +961,6 @@
                         // Hide the modal
                         const stopModal = bootstrap.Modal.getInstance(document.getElementById('confirmStopModal'));
                         stopModal.hide();
-    
                     } else {
                         // Handle errors
                         alert('Failed to stop Athan. Please try again.');
@@ -985,14 +985,15 @@
                 .then(data => {
                     if (data.status === 'success') {
                         // Close the modal after reboot
-                        rebootModal.hide();
                         const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
+                        rebootModal.hide();
                     } else {
                         alert('Error: Unable to reboot.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('An error occurred while rebooting.');
                 });
         });
 
