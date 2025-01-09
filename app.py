@@ -600,7 +600,8 @@ def remove_athan():
         except Exception as e:
             print(f"Error removing {athan_to_remove}: {str(e)}")
 
-    return redirect(url_for('index'))  # Redirect back to the index view
+    return jsonify({'status': 'success'})
+
 
 
 @app.route('/update-mosque', methods=['POST'])
