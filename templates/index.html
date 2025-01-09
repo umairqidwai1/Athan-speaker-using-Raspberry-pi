@@ -810,7 +810,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        alert(data.message);
         
                         // Dynamically remove the deleted option from the select dropdown
                         const audioType = formData.get('audio_type');
