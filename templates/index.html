@@ -884,7 +884,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    alert('Regular Athan played successfully');
+
                 } else {
                     alert('Error playing Regular Athan');
                 }
@@ -903,7 +903,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    alert('Iqama played successfully');
+
                 } else {
                     alert('Error playing Iqama');
                 }
@@ -912,7 +912,6 @@
                 console.error('Error:', error);
             });
         });
-
 
         // Stop Athan Button
         document.getElementById('confirmStopAthanBtn').addEventListener('click', function () {
@@ -928,8 +927,6 @@
                         const stopModal = bootstrap.Modal.getInstance(document.getElementById('confirmStopModal'));
                         stopModal.hide();
     
-                        // Optionally, show a success message
-                        alert('Athan stopped successfully!');
                     } else {
                         // Handle errors
                         alert('Failed to stop Athan. Please try again.');
