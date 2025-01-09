@@ -577,7 +577,7 @@ def save_iqama_settings_route():
 @app.route('/remove_athan', methods=['POST'])
 def remove_athan():
     athan_to_remove = request.form.get('athan_to_remove')
-    audio_type = request.form.get('audio_type')  # Get audio type (fajr or regular)
+    audio_type = request.form.get('audio_type')  # Get audio type (fajr, regular, or iqama)
 
     if athan_to_remove:
         try:
@@ -586,6 +586,8 @@ def remove_athan():
                 file_path = os.path.join(FAJR_ATHANS_DIR, athan_to_remove)
             elif audio_type == 'regular':
                 file_path = os.path.join(ATHANS_DIR, athan_to_remove)
+            elif audio_type == 'iqama':
+                file_path = os.path.join(IQAMA_DIR, athan_to_remove)
             else:
                 raise ValueError("Invalid audio type specified.")
 
@@ -593,11 +595,15 @@ def remove_athan():
             if os.path.exists(file_path):
                 os.remove(file_path)
                 print(f"{athan_to_remove} has been removed successfully.")
+                return jsonify({'status': 'success', 'message': f'{athan_to_remove} removed successfully.'}), 200
             else:
-                print(f"{athan_to_remove} does not exist.")
+                return jsonify({'status': 'error', 'message': f'{athan_to_remove} does not exist.'}), 404
         except Exception as e:
             print(f"Error removing {athan_to_remove}: {str(e)}")
-    return redirect(url_for('index'))
+            return jsonify({'status': 'error', 'message': str(e)}), 500
+
+    return jsonify({'status': 'error', 'message': 'No file specified.'}), 400
+
 
 
 @app.route('/update-mosque', methods=['POST'])
