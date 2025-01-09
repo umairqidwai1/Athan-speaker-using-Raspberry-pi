@@ -597,6 +597,7 @@ def remove_athan():
                 print(f"{athan_to_remove} does not exist.")
         except Exception as e:
             print(f"Error removing {athan_to_remove}: {str(e)}")
+    return redirect(url_for('index'))
 
 
 @app.route('/update-mosque', methods=['POST'])
