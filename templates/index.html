@@ -343,7 +343,6 @@
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmRebootModal">Reboot Raspberry Pi</button>
     </div>
 
-    
 
 <!-- Confirm Stop Athan Modal -->
 <div class="modal fade" id="confirmStopModal" tabindex="-1" aria-labelledby="confirmStopModalLabel" aria-hidden="true">
@@ -358,9 +357,7 @@
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-secondary modal-btn" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" style="display: inline;">
-                    <button type="submit" name="stop_athan" class="btn btn-warning modal-btn">Stop Athan</button>
-                </form>
+                <button type="button" class="btn btn-warning modal-btn" id="confirmStopAthanBtn">Stop Athan</button>
             </div>
         </div>
     </div>
@@ -573,6 +570,7 @@
             slider.value = data.volume;
             box.value = data.volume;
         });
+
         
         // Fetch and populate mosques in the dropdown
         document.addEventListener('DOMContentLoaded', function () {
@@ -800,6 +798,7 @@
             });
         });
 
+        
         // Function to enable/disable settings based on checkbox status
         function togglePrayerSettings(prayer) {
             const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
@@ -814,8 +813,7 @@
             timeInput.disabled = !isEnabled;
             delayRadio.disabled = !isEnabled;
             manualRadio.disabled = !isEnabled;
-
-            
+ 
             // Only set the default option if neither radio button is selected
             if (isEnabled && !delayRadio.checked && !manualRadio.checked) {
                 delayRadio.checked = true;
@@ -913,6 +911,34 @@
             .catch(error => {
                 console.error('Error:', error);
             });
+        });
+
+
+        // Stop Athan Button
+        document.getElementById('confirmStopAthanBtn').addEventListener('click', function () {
+            fetch('/stop_athan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        // Hide the modal
+                        const stopModal = bootstrap.Modal.getInstance(document.getElementById('confirmStopModal'));
+                        stopModal.hide();
+    
+                        // Optionally, show a success message
+                        alert('Athan stopped successfully!');
+                    } else {
+                        // Handle errors
+                        alert('Failed to stop Athan. Please try again.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred while stopping the Athan.');
+                });
         });
 
 
