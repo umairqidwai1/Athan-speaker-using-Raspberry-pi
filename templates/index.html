@@ -974,6 +974,11 @@
 
         // Reboot button
         document.getElementById('rebootBtn').addEventListener('click', function () {
+
+            // Close the modal before reboot
+            const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
+            rebootModal.hide();
+            
             fetch('/', {
                 method: 'POST',
                 headers: {
@@ -984,9 +989,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        // Close the modal after reboot
-                        const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
-                        rebootModal.hide();
+
                     } else {
                         alert('Error: Unable to reboot.');
                     }
