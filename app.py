@@ -506,6 +506,15 @@ def test_iqama():
         print(f"Error testing iqama: {e}")
         return jsonify({'status': 'error', 'message': 'Failed to play iqama'})
 
+@app.route('/stop_athan', methods=['POST'])
+def stop_athan_route():
+    try:
+        stop_athan()  # Your function to stop the Athan
+        return jsonify({'status': 'success'})
+    except Exception as e:
+        print(f"Error stopping Athan: {e}")
+        return jsonify({'status': 'error', 'message': 'Failed to stop Athan'}), 500
+
 # Route to handle Fajr Athan YouTube download
 @app.route('/download_fajr_from_youtube', methods=['POST'])
 def download_fajr_from_youtube():
