@@ -820,8 +820,8 @@
                         }
         
                         // Close the modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
                         modal.hide();
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
                     } else {
                         alert(`Error: ${data.message}`);
                     }
@@ -986,9 +986,8 @@
                 .then(data => {
                     if (data.status === 'success') {
                         // Close the modal after reboot
-                        const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
                         rebootModal.hide();
-                        alert('Reboot initiated. Please wait for the system to restart.');
+                        const rebootModal = bootstrap.Modal.getInstance(document.getElementById('confirmRebootModal'));
                     } else {
                         alert('Error: Unable to reboot.');
                     }
