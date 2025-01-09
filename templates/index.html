@@ -800,7 +800,11 @@
             e.preventDefault(); // Prevent the default form submission
         
             const formData = new FormData(this);
-        
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
+            modal.hide();
+            
             fetch('/remove_athan', {
                 method: 'POST',
                 body: formData
@@ -818,10 +822,6 @@
                         if (optionToRemove) {
                             selectElement.removeChild(optionToRemove);
                         }
-        
-                        // Close the modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
-                        modal.hide();
                     } else {
                         alert(`Error: ${data.message}`);
                     }
