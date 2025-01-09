@@ -814,8 +814,6 @@
                         const removeModal = bootstrap.Modal.getInstance(document.getElementById('confirmRemoveModal'));
                         removeModal.hide();
     
-                        // Optionally, update the UI dynamically
-                        alert('Athan removed successfully!');
                         // Example: remove the option from the dropdown
                         const selectElement = document.querySelector(`.remove-btn[data-audio-type="${audioType}"]`).nextElementSibling;
                         const optionToRemove = Array.from(selectElement.options).find(option => option.value === athanToRemove);
