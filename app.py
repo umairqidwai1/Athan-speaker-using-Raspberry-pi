@@ -15,7 +15,6 @@ import os
 
 app = Flask(__name__)
 socketio = SocketIO(app) 
-mixer.init()
 
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
@@ -643,4 +642,5 @@ def get_mosques():
 start_background_thread()
 
 if __name__ == '__main__':
+    mixer.init()
     app.run(host='0.0.0.0', port=5000, debug=True)
