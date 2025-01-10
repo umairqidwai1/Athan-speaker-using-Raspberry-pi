@@ -313,7 +313,7 @@ def main_loop():
             play_regular_athan()
         elif current_time == ISHA:
             play_regular_athan()
-        elif current_time == '22:24':
+        elif current_time == '22:27':
             play_regular_athan()
 
         # Sleep for a second before checking again
