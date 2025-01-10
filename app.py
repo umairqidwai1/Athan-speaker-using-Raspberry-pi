@@ -109,6 +109,8 @@ def save_iqama_settings(settings):
 # Set alsamixer to 100%
 subprocess.run(["amixer", "-M", "set", "PCM", "100%", "unmute"])
 
+mixer.init()
+
 def set_volume(volume):
     mixer.music.set_volume(volume / 100)
 
@@ -642,5 +644,4 @@ def get_mosques():
 start_background_thread()
 
 if __name__ == '__main__':
-    mixer.init()
     app.run(host='0.0.0.0', port=5000, debug=False)
