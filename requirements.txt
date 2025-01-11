@@ -3,5 +3,4 @@ schedule
 psutil
 yt-dlp
 flask
-pydub
-evdev
+evdevs
