@@ -1,6 +1,5 @@
 flask_socketio
 schedule
-psutil
 yt-dlp
 flask
 evdevs
