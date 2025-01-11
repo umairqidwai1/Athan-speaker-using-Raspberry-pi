@@ -21,7 +21,7 @@ prayer_time_cache = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
 # Mawaqit API Link for your local mosque
-LinkAPI = "http://localhost:8000/api/v1/noor-dublin/prayer-times"
+LinkAPI = ""
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
