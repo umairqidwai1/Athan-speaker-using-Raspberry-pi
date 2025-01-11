@@ -2,4 +2,4 @@ flask_socketio
 schedule
 yt-dlp
 flask
-evdevs
+evdev
