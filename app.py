@@ -142,6 +142,7 @@ def play_fajr_athan():
         mixer.music.play()
         while mixer.music.get_busy():
             time.sleep(1)
+        time.sleep(60)
     except Exception as e:
         print(f"Error playing Fajr athan: {e}")
 
@@ -153,6 +154,7 @@ def play_regular_athan():
         mixer.music.play()
         while mixer.music.get_busy():
             time.sleep(1)
+        time.sleep(60)
     except Exception as e:
         print(f"Error playing regular athan: {e}")
 
