@@ -92,9 +92,9 @@ At the bottom of the file add these lines:
 ```
 XDG_RUNTIME_DIR=/run/user/1000
 @reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPI.sh
-@reboot sleep 30 && /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
-@reboot /usr/bin/python3 /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/monitor.py
+@reboot /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/startAPP.sh
 * * * * * /bin/bash /home/pi/Desktop/Athan-speaker-using-Raspberry-pi/auto_pull.sh
+0 3 * * * sudo reboot
 ```
 
 Reboot your Pi using the command: 
