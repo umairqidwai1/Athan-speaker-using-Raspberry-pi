@@ -565,20 +565,24 @@ def upload_iqama():
 # Route to handle saving iqama settings
 @app.route('/save_iqama_settings', methods=['POST'])
 def save_iqama_settings_route():
-    iqama_settings = {}
-    prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
-    
-    for prayer in prayers:
-        iqama_settings[prayer] = {
-            'enabled': request.form.get(f'{prayer}_enabled') == 'on',
-            'option': request.form.get(f'{prayer}_option'),
-            'delay': request.form.get(f'{prayer}_delay'),
-            'manual_time': request.form.get(f'{prayer}_manual_time')
-        }
-    
-    save_iqama_settings(iqama_settings)
-    update_iqama_times()
-    return redirect(url_for('index'))
+    try:
+        iqama_settings = {}
+        prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
+
+        for prayer in prayers:
+            iqama_settings[prayer] = {
+                'enabled': request.form.get(f'{prayer}_enabled') == 'on',
+                'option': request.form.get(f'{prayer}_option'),
+                'delay': request.form.get(f'{prayer}_delay'),
+                'manual_time': request.form.get(f'{prayer}_manual_time')
+            }
+
+        save_iqama_settings(iqama_settings)  # Save settings to the file
+        return jsonify({'status': 'success', 'message': 'Iqama settings saved successfully.'}), 200
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Failed to save settings. {str(e)}'}), 500
+
 
 #Route to handle deleting Athan files
 @app.route('/remove_athan', methods=['POST'])
