@@ -625,6 +625,11 @@
         // Save mosque URL on button click
         document.getElementById('saveMosqueUrl').addEventListener('click', function () {
             const mosqueUrl = document.getElementById('mosqueUrl').value;
+            
+            // Hide modal immediatly after click
+            const mosqueModal =  bootstrap.Modal.getInstance(document.getElementById('mosqueModal'));
+            mosqueModal.hide();
+            //location.reload();
             fetch('/update-mosque', {
                 method: 'POST',
                 headers: {
@@ -634,10 +639,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert('Mosque updated successfully!');
-                    location.reload();  // Reload to display updated prayer times
-                } else {
+                if (!data.success) {
                     alert('Error updating mosque!');
                 }
             });
