@@ -646,7 +646,7 @@
 
 
         // Fajr Athan Upload Button Click
-        document.getElementById('downloadFajrBtn').addEventListener('click', function() {
+        document.getElementById('downloadFajrBtn').addEventListener('click', function () {
             const form = document.getElementById('fajrUploadForm');
             const youtubeUrl = form.querySelector('#fajr_url').value.trim();
             const fileInput = form.querySelector('#fajr_file').files[0];
@@ -672,27 +672,57 @@
                         'youtube_url': youtubeUrl
                     })
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('Error: Could not download Fajr Athan.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Error: Could not download Fajr Athan.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
         
                 // Handle the "OK" button to redirect, but don't dismiss the confirmation modal
-                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
+                document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function () {
                     window.location.href = "{{ url_for('index') }}"; // Redirect to the main page
                 });
         
             } else if (fileInput) {
-                // If file is selected, submit the form normally
-                form.submit();
+                // If a file is selected, upload it via fetch
+                const formData = new FormData();
+                formData.append('file', fileInput);
+        
+                fetch('{{ url_for("upload_fajr_athan") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error uploading Fajr Athan.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Fajr Athan uploaded successfully!');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while uploading the file.');
+                    });
+        
+                // Close the modal after the fetch request
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
+                if (uploadModal) {
+                    uploadModal.hide();
+                }
             } else {
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
+
         
         // Regular Athan Upload Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
