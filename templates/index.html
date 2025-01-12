@@ -391,8 +391,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div style="height: 50px;"></div>
                 Reload the page after about 5 minutes to see uploaded Athans.
                 You can safely close the application now.
+                <div style="height: 50px;"></div>
             </div>
             <div class="modal-footer text-center">
                 <button type="button" class="btn btn-secondary modal-btn" data-bs-dismiss="modal">OK</button>
@@ -651,17 +653,15 @@
             const fileInput = form.querySelector('#fajr_file').files[0];
         
             if (youtubeUrl) {
-                // Dismiss the upload modal (if it's open)
+                // Handle YouTube URL submission
                 const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
                 if (uploadModal) {
-                    uploadModal.hide(); // Dismiss the first modal
+                    uploadModal.hide();
                 }
         
-                // Show the confirmation modal
                 const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
                 confirmModal.show();
         
-                // Submit form with YouTube URL via fetch (runs in background)
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
                     method: 'POST',
                     headers: {
@@ -680,20 +680,41 @@
                     console.error('Error:', error);
                 });
         
-                // Handle the "OK" button to redirect
                 document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    // Hide modal
                     const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmUrlUpload'));
                     confirmModal.hide();
                 });
         
             } else if (fileInput) {
-                // If file is selected, submit the form normally
-                form.submit();
+                // Handle file upload asynchronously
+                const formData = new FormData();
+                formData.append('file', fileInput);
+        
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
+                if (uploadModal) {
+                    uploadModal.hide(); // Close the modal immediately
+                }
+        
+                fetch('{{ url_for("upload_fajr_athan") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Fajr Athan uploaded successfully!');
+                    } else {
+                        alert('Error uploading Fajr Athan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             } else {
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
+
         
         // Regular Athan Upload Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
@@ -745,6 +766,7 @@
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
+
 
         // Iqama Upload Button Click
         document.getElementById('downloadIqamaBtn').addEventListener('click', function() {
@@ -838,60 +860,7 @@
                 });
         });
 
-        // Save Iqama settings
-        document.addEventListener('DOMContentLoaded', function () {
-            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-        
-            // Initialize prayer settings toggles
-            prayers.forEach(prayer => {
-                const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
-                const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
-                const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
-        
-                // Toggle delay and manual inputs based on checkbox and radio button states
-                checkbox.addEventListener('change', () => togglePrayerSettings(prayer));
-                delayRadio.addEventListener('change', () => togglePrayerSettings(prayer));
-                manualRadio.addEventListener('change', () => togglePrayerSettings(prayer));
-        
-                // Set initial state based on saved values
-                togglePrayerSettings(prayer);
-            });
-        
-            // Handle form submission in the background
-            const iqamaSettingsForm = document.getElementById('iqamaSettingsForm');
-            const saveButton = iqamaSettingsForm.querySelector('.btn-primary');
-        
-            saveButton.addEventListener('click', function (e) {
-                e.preventDefault(); // Prevent default form submission
-        
-                // Collect form data
-                const formData = new FormData(iqamaSettingsForm);
-        
-                // Send data via fetch
-                fetch(iqamaSettingsForm.action, {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            alert('Iqama settings saved successfully!'); // Optional success feedback
-        
-                            // Close the modal
-                            const iqamaSettingsModal = bootstrap.Modal.getInstance(document.getElementById('iqamaSettingsModal'));
-                            iqamaSettingsModal.hide();
-                        } else {
-                            alert(`Error saving settings: ${data.message}`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error saving iqama settings:', error);
-                        alert('An error occurred while saving the iqama settings.');
-                    });
-            });
-        });
-        
-        // Function to enable/disable settings based on checkbox and radio selection
+        // Function to enable/disable settings based on checkbox status
         function togglePrayerSettings(prayer) {
             const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
             const delayInput = document.querySelector(`input[name="${prayer}_delay"]`);
@@ -899,11 +868,92 @@
             const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
             const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
         
+            // Enable or disable based on checkbox status
             const isEnabled = checkbox.checked;
-            delayInput.disabled = !isEnabled || !delayRadio.checked;
-            timeInput.disabled = !isEnabled || !manualRadio.checked;
+            delayInput.disabled = !isEnabled;
+            timeInput.disabled = !isEnabled;
+            delayRadio.disabled = !isEnabled;
+            manualRadio.disabled = !isEnabled;
+        
+            // Only set the default option if neither radio button is selected
+            if (isEnabled && !delayRadio.checked && !manualRadio.checked) {
+                delayRadio.checked = true;
+                delayInput.disabled = false;
+                timeInput.disabled = true;
+            } else if (isEnabled) {
+                // Apply the saved option state on load
+                if (delayRadio.checked) {
+                    delayInput.disabled = false;
+                    timeInput.disabled = true;
+                } else if (manualRadio.checked) {
+                    timeInput.disabled = false;
+                    delayInput.disabled = true;
+                }
+            }
         }
-
+        
+        // Event listener setup for enabling/disabling settings and handling saves
+        document.addEventListener('DOMContentLoaded', function () {
+            const prayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+        
+            // Set up toggling functionality
+            prayers.forEach(prayer => {
+                const checkbox = document.querySelector(`input[name="${prayer}_enabled"]`);
+                checkbox.addEventListener('change', () => togglePrayerSettings(prayer));
+                togglePrayerSettings(prayer); // Set initial state based on current checkbox status
+        
+                // Toggle delay and time inputs based on radio selection
+                const delayRadio = document.querySelector(`input[name="${prayer}_option"][value="delay"]`);
+                const manualRadio = document.querySelector(`input[name="${prayer}_option"][value="manual"]`);
+        
+                delayRadio.addEventListener('change', function () {
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = this.checked;
+                });
+        
+                manualRadio.addEventListener('change', function () {
+                    document.querySelector(`input[name="${prayer}_manual_time"]`).disabled = !this.checked;
+                    document.querySelector(`input[name="${prayer}_delay"]`).disabled = this.checked;
+                });
+            });
+        
+            // Save Iqama settings in the background and close the modal
+            const iqamaSettingsForm = document.getElementById('iqamaSettingsForm');
+            const saveButton = iqamaSettingsForm.querySelector('.btn-primary');
+            const iqamaSettingsModal = document.getElementById('iqamaSettingsModal');
+        
+            saveButton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default form submission
+        
+                // Collect the form data
+                const formData = new FormData(iqamaSettingsForm);
+        
+                // Send the form data via fetch
+                fetch(iqamaSettingsForm.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Close the modal
+                            const modalInstance = bootstrap.Modal.getInstance(iqamaSettingsModal);
+                            modalInstance.hide();
+        
+                            // Optional: Display a success message
+                            alert(data.message || 'Settings saved successfully!');
+                        } else {
+                            // Display an error message
+                            alert(data.message || 'Failed to save settings.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving iqama settings:', error);
+                        alert('An error occurred while saving the settings.');
+                    });
+            });
+        });
+        
 
         
         // test fajr athan button
