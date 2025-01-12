@@ -439,19 +439,23 @@ def index():
                            volume=current_volume,
                            saved_mosque_url=saved_mosque_url)
 
+
 @app.route('/upload_fajr_athan', methods=['POST'])
 def upload_fajr_athan():
     if 'file' not in request.files:
-        return redirect(url_for('index'))
+        return jsonify({'status': 'error', 'message': 'No file provided.'}), 400
 
     file = request.files['file']
     if file.filename == '':
-        return redirect(url_for('index'))
+        return jsonify({'status': 'error', 'message': 'No file selected.'}), 400
 
-    if file:
+    try:
         filename = file.filename
         file.save(os.path.join(FAJR_ATHANS_DIR, filename))
-        return redirect(url_for('index'))
+        return jsonify({'status': 'success', 'message': f'{filename} uploaded successfully.'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Failed to upload file. {str(e)}'}), 500
+
 
 @app.route('/upload_regular_athan', methods=['POST'])
 def upload_regular_athan():
