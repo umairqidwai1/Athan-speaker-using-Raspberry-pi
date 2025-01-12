@@ -927,6 +927,10 @@
         
                 // Collect the form data
                 const formData = new FormData(iqamaSettingsForm);
+
+                // Close the modal
+                const modalInstance = bootstrap.Modal.getInstance(iqamaSettingsModal);
+                modalInstance.hide();
         
                 // Send the form data via fetch
                 fetch(iqamaSettingsForm.action, {
@@ -936,12 +940,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            // Close the modal
-                            const modalInstance = bootstrap.Modal.getInstance(iqamaSettingsModal);
-                            modalInstance.hide();
-        
-                            // Optional: Display a success message
-                            alert(data.message || 'Settings saved successfully!');
+
                         } else {
                             // Display an error message
                             alert(data.message || 'Failed to save settings.');
