@@ -626,10 +626,9 @@
         document.getElementById('saveMosqueUrl').addEventListener('click', function () {
             const mosqueUrl = document.getElementById('mosqueUrl').value;
             
-            // Hide modal immediatly after click
-            const mosqueModal =  bootstrap.Modal.getInstance(document.getElementById('mosqueModal'));
-            mosqueModal.hide();
-            //location.reload();
+            // Reload Immediatly aftr button click
+            location.reload();
+            
             fetch('/update-mosque', {
                 method: 'POST',
                 headers: {
