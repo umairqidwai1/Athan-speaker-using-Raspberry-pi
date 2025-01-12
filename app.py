@@ -125,12 +125,17 @@ def save_volume_setting(volume):
     with open(VOLUME_FILE, 'w') as f:
         json.dump({'volume': volume}, f)
 
+def get_link_api():
+    mosque_url = load_mosque_url()
+    mosque_identifier = mosque_url.split('/')[-1]
+    link_api = f"http://localhost:8000/api/v1/{mosque_identifier}/prayer-times"
+    return link_api
 
 # Load initial selections and volume
 selected_athan = load_selected_athans()
 selected_iqama = load_selected_iqama() 
 current_volume = load_volume_setting()
-LinkAPI = load_mosque_url()
+LinkAPI = get_link_api()
 set_volume(current_volume)
 
 
