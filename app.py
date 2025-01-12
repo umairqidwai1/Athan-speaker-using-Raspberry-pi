@@ -20,8 +20,6 @@ socketio = SocketIO(app)
 prayer_time_cache = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
-# Mawaqit API Link for your local mosque
-LinkAPI = load_mosque_url()
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
@@ -132,7 +130,9 @@ def save_volume_setting(volume):
 selected_athan = load_selected_athans()
 selected_iqama = load_selected_iqama() 
 current_volume = load_volume_setting()
+LinkAPI = load_mosque_url()
 set_volume(current_volume)
+
 
 def play_fajr_athan():
     try:
