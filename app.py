@@ -19,7 +19,7 @@ socketio = SocketIO(app)
 # Initialize prayer_time_cache and last_fetched as global variables
 prayer_time_cache = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
-
+FAJR = DHUHR = ASR = MAGHRIB = ISHA = None
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
@@ -56,8 +56,8 @@ def load_selected_athans():
             return json.load(f)
     else:
         return {
-            'fajr': 'default_fajr.wav',
-            'regular': 'default_regular.wav'
+            'fajr': 'Subhanallah Beautiful Azan Fajr Makkah.mp3',
+            'regular': 'The most beautiful Azan in the World.mp3'
         }
 
 # Function to save selected athans to file
@@ -213,6 +213,27 @@ def get_prayer_times():
     return prayer_times_cache
 
 
+def extract_prayer_times():
+    global FAJR, DHUHR, ASR, MAGHRIB, ISHA
+
+    try:
+        prayer_times = get_prayer_times()
+        
+        # Extract individual prayer times (24-hour format) once
+        FAJR = prayer_times.get('fajr', '')
+        DHUHR = prayer_times.get('dohr', '')
+        ASR = prayer_times.get('asr', '')
+        MAGHRIB = prayer_times.get('maghreb', '')
+        ISHA = prayer_times.get('icha', '')
+
+    except Exception as e:
+        print(f"Error extracting prayer times: {e}")
+        return None  # Or return an empty dict if preferred
+        
+    # Return the extracted prayer times
+    return FAJR, DHUHR, ASR, MAGHRIB, ISHA
+
+
 def format_time(time_str):
     """Convert 24-hour time format to 12-hour time format with AM/PM."""
     try:
@@ -282,19 +303,8 @@ def handle_volume_buttons():
 
 def main_loop():
     # Load prayer times initially when the program starts
-    prayer_times = get_prayer_times()
-
-    # Check if prayer times were fetched successfully
-    if not prayer_times:
-        print("Failed to load prayer times. Exiting...")
-        return  # Exit if prayer times cannot be fetched
-
-    # Extract individual prayer times (24-hour format) once
-    FAJR = prayer_times.get('fajr', '')
-    DHUHR = prayer_times.get('dohr', '')
-    ASR = prayer_times.get('asr', '')
-    MAGHRIB = prayer_times.get('maghreb', '')
-    ISHA = prayer_times.get('icha', '')
+    get_prayer_times()
+    extract_prayer_times()
 
     while True:
         # Get the current time in 24-hour format (HH:MM)
@@ -636,6 +646,7 @@ def update_mosque():
 
             # Fetch the new prayer times
             get_prayer_times()
+            extract_prayer_times()
 
             return jsonify({'success': True})
         else:
