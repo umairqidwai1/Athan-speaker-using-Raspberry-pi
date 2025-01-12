@@ -21,7 +21,7 @@ prayer_time_cache = None
 fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 
 # Mawaqit API Link for your local mosque
-LinkAPI = None
+LinkAPI = load_mosque_url()
 
 # Define directories for athan files
 ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
