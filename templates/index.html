@@ -682,9 +682,11 @@
                     console.error('Error:', error);
                 });
         
-                // Handle the "OK" button to redirect, but don't dismiss the confirmation modal
+                // Handle the "OK" button to redirect
                 document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    window.location.href = "{{ url_for('index') }}"; // Redirect to the main page
+                    // Hide modal
+                    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmUrlUpload'));
+                    confirmModal.hide();
                 });
         
             } else if (fileInput) {
@@ -733,7 +735,9 @@
         
                 // Handle the "OK" button to redirect, but don't dismiss the confirmation modal
                 document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    window.location.href = "{{ url_for('index') }}"; // Redirect to the main page
+                    // Hide modal
+                    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmUrlUpload'));
+                    confirmModal.hide();
                 });
         
             } else if (fileInput) {
@@ -778,7 +782,9 @@
                 });
     
                 document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    window.location.href = "{{ url_for('index') }}";
+                    // Hide modal
+                    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmUrlUpload'));
+                    confirmModal.hide();
                 });
     
             } else if (fileInput) {
