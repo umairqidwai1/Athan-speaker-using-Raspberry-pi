@@ -653,17 +653,15 @@
             const fileInput = form.querySelector('#fajr_file').files[0];
         
             if (youtubeUrl) {
-                // Dismiss the upload modal (if it's open)
+                // Handle YouTube URL submission
                 const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
                 if (uploadModal) {
-                    uploadModal.hide(); // Dismiss the first modal
+                    uploadModal.hide();
                 }
         
-                // Show the confirmation modal
                 const confirmModal = new bootstrap.Modal(document.getElementById('confirmUrlUpload'));
                 confirmModal.show();
         
-                // Submit form with YouTube URL via fetch (runs in background)
                 fetch('{{ url_for("download_fajr_from_youtube") }}', {
                     method: 'POST',
                     headers: {
@@ -682,20 +680,41 @@
                     console.error('Error:', error);
                 });
         
-                // Handle the "OK" button to redirect
                 document.querySelector('#confirmUrlUpload .modal-btn').addEventListener('click', function() {
-                    // Hide modal
                     const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmUrlUpload'));
                     confirmModal.hide();
                 });
         
             } else if (fileInput) {
-                // If file is selected, submit the form normally
-                form.submit();
+                // Handle file upload asynchronously
+                const formData = new FormData();
+                formData.append('file', fileInput);
+        
+                const uploadModal = bootstrap.Modal.getInstance(document.getElementById('uploadFajrModal'));
+                if (uploadModal) {
+                    uploadModal.hide(); // Close the modal immediately
+                }
+        
+                fetch('{{ url_for("upload_fajr_athan") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Fajr Athan uploaded successfully!');
+                    } else {
+                        alert('Error uploading Fajr Athan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             } else {
                 alert('Please provide either a YouTube URL or an audio file.');
             }
         });
+
         
         // Regular Athan Upload Button Click
         document.getElementById('downloadRegularBtn').addEventListener('click', function() {
