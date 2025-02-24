@@ -1,5 +1,6 @@
 flask_socketio
 schedule
 yt-dlp
+pygame
 flask
 evdev
