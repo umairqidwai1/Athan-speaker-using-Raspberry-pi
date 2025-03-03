@@ -22,18 +22,18 @@ fajr_iqama = dhuhr_iqama = asr_iqama = maghrib_iqama = isha_iqama = None
 FAJR = DHUHR = ASR = MAGHRIB = ISHA = None
 
 # Define directories for athan files
-ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
-FAJR_ATHANS_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
-TEMP_DIR =  '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Temp'
-IQAMA_DIR = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
+ATHANS_DIR = '/root/Desktop/Athan-speaker-using-Raspberry-pi/Athans'
+FAJR_ATHANS_DIR = '/root/Desktop/Athan-speaker-using-Raspberry-pi/FajrAthans'
+TEMP_DIR =  '/root/Desktop/Athan-speaker-using-Raspberry-pi/Temp'
+IQAMA_DIR = '/root/Desktop/Athan-speaker-using-Raspberry-pi/Iqamas'
 
 
 # File to store selected athans
-SELECTION_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
-VOLUME_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
-IQAMA_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
-SETTINGS_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
-MOSQUE_FILE = '/home/pi/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
+SELECTION_FILE = '/root/Desktop/Athan-speaker-using-Raspberry-pi/selected_athans.json'
+VOLUME_FILE = '/root/Desktop/Athan-speaker-using-Raspberry-pi/volume_setting.json'
+IQAMA_FILE = '/root/Desktop/Athan-speaker-using-Raspberry-pi/selected_iqama.json'
+SETTINGS_FILE = '/root/Desktop/Athan-speaker-using-Raspberry-pi/iqama_settings.json'
+MOSQUE_FILE = '/root/Desktop/Athan-speaker-using-Raspberry-pi/mosque_url.json'
 device = evdev.InputDevice('/dev/input/event0')
 
 
