@@ -305,7 +305,8 @@ def main_loop():
     # Load prayer times initially when the program starts
     get_prayer_times()
     extract_prayer_times()
-
+    update_iqama_times()
+    
     while True:
         # Get the current time in 24-hour format (HH:MM)
         current_time = datetime.now().strftime('%H:%M')
@@ -587,7 +588,8 @@ def save_iqama_settings_route():
                 'manual_time': request.form.get(f'{prayer}_manual_time')
             }
 
-        save_iqama_settings(iqama_settings)  # Save settings to the file
+        save_iqama_settings(iqama_settings)
+        update_iqama_times()
         return jsonify({'status': 'success', 'message': 'Iqama settings saved successfully.'}), 200
 
     except Exception as e:
