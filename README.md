@@ -2,8 +2,8 @@
 Make an Athan alarm speaker that plays the athan audio at you local prayer times from mawaqit using a raspberry pi.
 
 ### Prerequisites: 
- -Raspberry pi with SD card and power supply
- -Speaker
+ - Raspberry pi with SD card and power supply
+ - Speaker
 
 Install raspberry pi OS and configure SSH:
  - On your computer, install Raspberry Pi Imager if you dont already have it from [here](https://www.raspberrypi.com/software/)
