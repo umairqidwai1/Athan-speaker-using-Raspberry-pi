@@ -56,7 +56,7 @@ pip3 install -r requirements.txt
 ```
 Install redis using the commands:
 ```
-sudo apt-get install redis
+sudo apt-get install redis -y
 ```
 Set the environment variables for Redis host and port using the commands:
 ```
